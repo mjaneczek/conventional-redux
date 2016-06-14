@@ -1,6 +1,6 @@
 {
   "name": "conventional-redux",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Redux with conventions!",
   "main": "lib/index.js",
   "scripts": {
