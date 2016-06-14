@@ -1,5 +1,5 @@
 # Conventional-redux.js
-Make your redux more friendly by adding conventions and removing duplications!
+Make your redux more friendly by adding conventions and writing less code!
 
 ## The idea
 1. Combine actions and reducers into a interactor class
@@ -7,7 +7,9 @@ Make your redux more friendly by adding conventions and removing duplications!
 3. Handle an action by defining methods in the interactor
 
 ## The example (diff)
-Counter component from https://github.com/davezuko/react-redux-starter-kit/
+
+### Counter component 
+https://github.com/davezuko/react-redux-starter-kit/
 
 ### Before
 ```js
@@ -78,9 +80,137 @@ class CounterInteractor {
 }
 ```
 
+### Auth module
+https://github.com/erikras/react-redux-universal-hot-example/
+
+### Before
+
+```js
+const LOAD = 'redux-example/auth/LOAD';
+const LOAD_SUCCESS = 'redux-example/auth/LOAD_SUCCESS';
+const LOAD_FAIL = 'redux-example/auth/LOAD_FAIL';
+const LOGIN = 'redux-example/auth/LOGIN';
+const LOGIN_SUCCESS = 'redux-example/auth/LOGIN_SUCCESS';
+const LOGIN_FAIL = 'redux-example/auth/LOGIN_FAIL';
+const LOGOUT = 'redux-example/auth/LOGOUT';
+const LOGOUT_SUCCESS = 'redux-example/auth/LOGOUT_SUCCESS';
+const LOGOUT_FAIL = 'redux-example/auth/LOGOUT_FAIL';
+
+const initialState = {
+  loaded: false
+};
+
+export default function reducer(state = initialState, action = {}) {
+  switch (action.type) {
+    case LOGIN:
+      return {
+        ...state,
+        loggingIn: true
+      };
+    case LOGIN_SUCCESS:
+      return {
+        ...state,
+        loggingIn: false,
+        user: action.result
+      };
+    case LOGIN_FAIL:
+      return {
+        ...state,
+        loggingIn: false,
+        user: null,
+        loginError: action.error
+      };
+    case LOGOUT:
+      return {
+        ...state,
+        loggingOut: true
+      };
+    case LOGOUT_SUCCESS:
+      return {
+        ...state,
+        loggingOut: false,
+        user: null
+      };
+    case LOGOUT_FAIL:
+      return {
+        ...state,
+        loggingOut: false,
+        logoutError: action.error
+      };
+    default:
+      return state;
+  }
+}
+
+export function load() {
+  return {
+    types: [LOAD, LOAD_SUCCESS, LOAD_FAIL],
+    promise: (client) => client.get('/loadAuth')
+  };
+}
+
+export function login(name) {
+  return {
+    types: [LOGIN, LOGIN_SUCCESS, LOGIN_FAIL],
+    promise: (client) => client.post('/login', {
+      data: {
+        name: name
+      }
+    })
+  };
+}
+
+export function logout() {
+  return {
+    types: [LOGOUT, LOGOUT_SUCCESS, LOGOUT_FAIL],
+    promise: (client) => client.get('/logout')
+  };
+}
+```
+
+### After
+
+```js
+class AuthInteractor {
+  state = { loaded: false };
+
+  login(name) {
+    return client.post('/login', { data: { name: name }});
+  }
+  
+  logout() {
+    return client.get('/logout')
+  }
+
+  onLogin() {
+    return { ...state, loggingIn: true };
+  }
+  
+  onLoginSuccess(response) {
+    return { ...state, loggingIn: false, user: response.user };
+  }
+  
+  onLoginFail(response) {
+    return { ...state, loggingIn: false, loginError: response.error };
+  }
+  
+  onLogout() {
+    return { ...state, loggingOut: true };
+  }
+  
+  onLogoutSuccess(response) {
+    return { ...state, loggingOut: false, user: response.user };
+  }
+  
+  onLogoutFail(response) {
+    return { ...state, loggingOut: false, logoutError: response.error };
+  }
+}
+```
+
 ## Features
 
-## Conventional dispatch
+### Conventional dispatch
 
 ```js
 this.props.dispatch('counter:increment')
@@ -118,7 +248,7 @@ class CounterInteractor {
 }
 ```
 
-## Promise dispatch
+### Promise dispatch
 
 ```js
 this.props.dispatch(['github_userdata:fetch', 'mjaneczek'])
@@ -147,7 +277,7 @@ class GithubUserdataInteractor {
 }
 ```
 
-## Multi dispatch
+### Multi dispatch
 
 ```js
 this.props.dispatch(['github_profile:fetch', 'mjaneczek']);
