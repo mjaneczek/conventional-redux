@@ -1,0 +1,23 @@
+{
+  "name": "conventional-redux",
+  "version": "0.0.1",
+  "description": "Redux with conventions!",
+  "main": "lib/index.js",
+  "scripts": {
+    "prepublish": "babel src --out-dir lib"
+  },
+  "keywords": [
+    "react",
+    "redux",
+    "convention"
+  ],
+  "author": "Michal Janeczek",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-cli": "^6.9.0",
+    "babel-core": "^6.9.1",
+    "babel-preset-es2015": "^6.9.0",
+    "babel-preset-react": "^6.1.18",
+    "babel-preset-stage-0": "^6.1.18"
+  }
+}
