@@ -116,8 +116,6 @@ class CounterInteractor {
     return this.state * 2;
   }
 }
-
-
 ```
 
 ## Promise dispatch
@@ -147,7 +145,6 @@ class GithubUserdataInteractor {
     return { error: error.message }
   }
 }
-
 ```
 
 ## Multi dispatch
@@ -220,7 +217,6 @@ registerInteractors({
 this.props.dispatch('interactorName:actionWithoutParams');
 // or
 this.props.dispatch(['interactorName:actionName', 'param1', 'param2']);
-
 ```
 
 ## Example application
