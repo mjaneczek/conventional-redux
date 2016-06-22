@@ -12,7 +12,7 @@ export function conventionalReducers() {
 
 export function conventionalReducer(name) {
   return (state, action) => {
-    if(action.type.startsWith("CONV_REDUX/" + name)) {
+    if(action.type.startsWith("CONV_REDUX/" + name + ':')) {
       var reduceMethodName = getReduceMethodName(action);
       var interactor = interactors[name];
 
