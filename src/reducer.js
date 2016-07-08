@@ -12,18 +12,21 @@ export function conventionalReducers() {
 
 export function conventionalReducer(name) {
   return (state, action) => {
+    var interactor = interactors[name];
+
     if(action.type.startsWith("CONV_REDUX/" + name + ':')) {
       var reduceMethodName = getReduceMethodName(action);
-      var interactor = interactors[name];
 
       if (interactor[reduceMethodName]) {
         interactor.state = interactor[reduceMethodName].apply(interactor, action.args);
       }
-
-      return interactor.state;
     }
 
-    return interactors[name].state;
+    if(interactor.externalDependencies && interactor.externalDependencies[action.type]) {
+      interactor.state = interactor.externalDependencies[action.type].apply(interactor, action.args);
+    }
+
+    return interactor.state;
   }
 }
 
