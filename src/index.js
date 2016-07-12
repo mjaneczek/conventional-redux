@@ -1,5 +1,6 @@
 export { conventionalReduxMiddleware } from './middleware';
 export { conventionalReducers } from './reducer';
+export { connectAllInteractors, connectInteractors } from './connect';
 
 export var interactors = {};
 export var dynamicInteractorKeys = [];
