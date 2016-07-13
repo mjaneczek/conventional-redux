@@ -1,17 +1,16 @@
-# Conventional-redux.js
-Make your redux more friendly by adding conventions and writing less code!
+# Conventional-redux.js [![Code Climate](https://codeclimate.com/github/mjaneczek/conventional-redux/badges/gpa.svg)](https://codeclimate.com/github/mjaneczek/conventional-redux)
+Conventional-redux.js is a library for small and medium applications, it wraps the react-redux and provides API based
+on convention over configuration pattern. It **is NOT new flux implementation** so everything is in 100% compatible with
+standard redux approach.
 
 ## The idea
-1. Combine actions and reducers into a interactor class
-2. Dispatch action in a ```interactorName:method``` format (eg. ```this.dispatch('counter:double')```)
-3. Handle an action by defining methods in the interactor
+1. Remove boilerplate code by adding conventions
+2. Don't break any redux rule/idea
+3. Handle basic stuff automatically with ability to override
 
-## The example (diff)
+## The difference (counter example)
 
-### Counter component 
-https://github.com/davezuko/react-redux-starter-kit/
-
-### Before
+### Standard redux module
 ```js
 // ------------------------------------
 // Constants
@@ -61,15 +60,18 @@ export default function counterReducer (state = initialState, action) {
   return handler ? handler(state, action) : state
 }
 ```
-### After
+
+### Conventional-redux interactor
 ```js
 class CounterInteractor {
   state = 0;
 
+  // actions:
   doubleAsync() {
     setTimeout(() => { this.dispatch('counter:double') }, 500)
   }
 
+  // reduce methods:
   onIncrement() {
     return this.state + 1;
   }
@@ -80,186 +82,113 @@ class CounterInteractor {
 }
 ```
 
-### Auth module
-https://github.com/erikras/react-redux-universal-hot-example/
-
-### Before
-
+### Standard redux component + container
 ```js
-const LOAD = 'redux-example/auth/LOAD';
-const LOAD_SUCCESS = 'redux-example/auth/LOAD_SUCCESS';
-const LOAD_FAIL = 'redux-example/auth/LOAD_FAIL';
-const LOGIN = 'redux-example/auth/LOGIN';
-const LOGIN_SUCCESS = 'redux-example/auth/LOGIN_SUCCESS';
-const LOGIN_FAIL = 'redux-example/auth/LOGIN_FAIL';
-const LOGOUT = 'redux-example/auth/LOGOUT';
-const LOGOUT_SUCCESS = 'redux-example/auth/LOGOUT_SUCCESS';
-const LOGOUT_FAIL = 'redux-example/auth/LOGOUT_FAIL';
-
-const initialState = {
-  loaded: false
-};
-
-export default function reducer(state = initialState, action = {}) {
-  switch (action.type) {
-    case LOGIN:
-      return {
-        ...state,
-        loggingIn: true
-      };
-    case LOGIN_SUCCESS:
-      return {
-        ...state,
-        loggingIn: false,
-        user: action.result
-      };
-    case LOGIN_FAIL:
-      return {
-        ...state,
-        loggingIn: false,
-        user: null,
-        loginError: action.error
-      };
-    case LOGOUT:
-      return {
-        ...state,
-        loggingOut: true
-      };
-    case LOGOUT_SUCCESS:
-      return {
-        ...state,
-        loggingOut: false,
-        user: null
-      };
-    case LOGOUT_FAIL:
-      return {
-        ...state,
-        loggingOut: false,
-        logoutError: action.error
-      };
-    default:
-      return state;
-  }
+const mapActionCreators = {
+  increment: () => increment(1),
+  doubleAsync
 }
 
-export function load() {
-  return {
-    types: [LOAD, LOAD_SUCCESS, LOAD_FAIL],
-    promise: (client) => client.get('/loadAuth')
-  };
-}
+const mapStateToProps = (state) => ({
+  counter: state.counter
+})
 
-export function login(name) {
-  return {
-    types: [LOGIN, LOGIN_SUCCESS, LOGIN_FAIL],
-    promise: (client) => client.post('/login', {
-      data: {
-        name: name
-      }
-    })
-  };
-}
+export const Counter = (props) => (
+  <div>
+    <h2>{props.counter}</h2>
+    
+    <button onClick={props.increment}>
+      Increment
+    </button>
+    
+    <button onClick={props.doubleAsync}>
+      Double (Async)
+    </button>
+  </div>
+)
 
-export function logout() {
-  return {
-    types: [LOGOUT, LOGOUT_SUCCESS, LOGOUT_FAIL],
-    promise: (client) => client.get('/logout')
-  };
-}
+export default connect(mapStateToProps, mapActionCreators)(Counter)
 ```
 
-### After
-
+### Conventional-redux connected component
 ```js
-class AuthInteractor {
-  state = { loaded: false };
-
-  login(name) {
-    return client.post('/login', { data: { name: name }});
-  }
-  
-  logout() {
-    return client.get('/logout')
-  }
-
-  onLogin() {
-    return { ...state, loggingIn: true };
-  }
-  
-  onLoginSuccess(response) {
-    return { ...state, loggingIn: false, user: response.user };
-  }
-  
-  onLoginFail(response) {
-    return { ...state, loggingIn: false, loginError: response.error };
-  }
-  
-  onLogout() {
-    return { ...state, loggingOut: true };
-  }
-  
-  onLogoutSuccess(response) {
-    return { ...state, loggingOut: false, user: response.user };
-  }
-  
-  onLogoutFail(response) {
-    return { ...state, loggingOut: false, logoutError: response.error };
+class Counter extends React.Component {
+  render () {
+    return (
+      <div>
+        <h2>{this.p('counter')}</h2>
+        
+        <button onClick={() => this.counter.increment()}>
+          Increment
+        </button>
+        
+        <button onClick={() => this.counter.doubleAsync()}>
+          Double (Async)
+        </button>
+      </div>
+    )
   }
 }
+
+export default connectInteractors(Counter, 'counter');
 ```
+Redux examples source: https://github.com/davezuko/react-redux-starter-kit/tree/master/src/routes/Counter
+Conventional-redux examples source: https://github.com/mjaneczek/react-conventional-redux-starter-kit/blob/master/src/routes/Counter
 
-## Features
+### Standard redux approach (explicit)
+1. Define component
+2. Define actions
+3. Define reducer
+4. Define mapActionCreators
+5. Define mapStateToProps
+6. Define container
+7. [Optional] Define shouldComponentUpdate function
+8. Connect!
 
-### Conventional dispatch
+### Conventional-redux approach
+1. Define component
+2. Define interactor
+3. Connect!
 
-```js
-this.props.dispatch('counter:increment')
-this.props.dispatch('counter:incrementBy100')
-this.props.dispatch('counter:doubleAsync')
-```
+**Remember that you can combine these two approaches! Use convetional way for simple parts of your application, but
+when you need more control over what is going on, pure redux should be better!**
 
+## Functionalities list
+
+### Auto define actions
+The library automatically defines actions based on reduce methods.
 ```js
 class CounterInteractor {
-  // default state
   state = 0;
 
-  // you can define a method to customize an action
-  doubleAsync() {
-    setTimeout(() => { this.dispatch('counter:double') }, 500)
-  }
+  // You can still define increment by your own (but not need to)!
+  // increment() {
+  //   console.log('test');
+  // }
 
-  // but for standard actions it is not necessary
-  incrementBy100() {
-    console.log('you can write me but it is not required!');
-  }
-  
-  // it's reducer function, the name must start with 'on'
-  onIncrement() {
-    return this.state + 1;
-  }
-
-  onIncrementBy100() {
-    return this.state + 100;
+  onIncrement(by = 1) {
+    return this.state + by;
   }
 
   onDouble() {
     return this.state * 2;
   }
 }
+
+// dispatch examples:
+// this.counter.increment();
+// this.counter.increment(10);
+// this.counter.double();
 ```
 
-### Promise dispatch
-
-```js
-this.props.dispatch(['github_userdata:fetch', 'mjaneczek'])
-```
-
+### Auto handle for promises
+Automatically handling for promises resolve and reject.
 ```js
 class GithubUserdataInteractor {
   state = {};
 
-  // If you return a promise, conventional-redux will auto dispatch action on promise success or fail.
   fetch(userName) {
+    // need to return promise
     return fetchResource('https://api.github.com/users/' + userName)
   }
 
@@ -267,42 +196,126 @@ class GithubUserdataInteractor {
     return { loading: true }
   }
 
-  onFetchSuccess(userData) {
-    return { user: userData }
+  fetchSuccess(userResponse) {
+    console.log(userResponse);
+  }
+
+  onFetchSuccess(userResponse) {
+    return { user: userResponse }
   }
 
   onFetchError(error) {
     return { error: error.message }
   }
 }
+
 ```
 
-### Multi dispatch
-
+### Action dispatch returns promise
+Dispatching an action always return a promise.
 ```js
-this.props.dispatch(['github_profile:fetch', 'mjaneczek']);
+// in component
+onClick(user) {
+  // dispatch an action put of users interactor
+  this.users.put(user.id, {username: 'mjaneczek'}).then(() => {
+    // when success dispatch an action success of toastr interactor
+    this.toastr.success('Username updated!');
+  })
+}
+
+// in interactor (fetch action)
+fetch() {
+  return Promise.all([
+    this.dispatch('repos:fetch'),
+    this.dispatch('gists:fetch')
+  ]);
+}
+
+fetchSuccess() {
+  console.log('repos and gists fetched!');
+}
 ```
 
+### Interactor external dependencies
+You can define a hash of external dependencies to modify interactor state after non interactor actions.
 ```js
-export default class GithubProfileInteractor {
+export default class ModalsInteractor {
   state = {};
 
-  fetch(userName) {
-    // return promise to automatically call onFetchSuccess/Fail
-    return Promise.all([
-      // dispatch another actions from different interactors
-      this.dispatch(['repos:fetch', userName])
-      this.dispatch(['gists:fetch', userName])
-    ]);
+  externalDependencies = {
+    '@@router/LOCATION_CHANGE': this.onHideAll
+  };
+
+  onHideAll(args) {
+    return {}; // hides all modals
   }
 }
+```
+
+### Connect (all) interactors
+Auto attach all interactor actions to `this.interactorName` hash, interactor state is avaliable via
+`this.p('interactorName')` method. 
+
+```js
+class Counter extends React.Component {
+  render () {
+    return (
+      <div>
+        <h2>{this.p('counter')}</h2>
+        
+        <button onClick={() => this.counter.increment()}>
+          Increment
+        </button>
+        
+        <button onClick={() => this.counter.doubleAsync()}>
+          Double (Async)
+        </button>
+      </div>
+    )
+  }
+}
+
+export default connectInteractors(Counter, 'counter');
+// or (for many interactors)
+export default connectInteractors(Counter, ['counter', 'currentUser']);
+// or
+export default connectAllInteractors(Counter);
+```
+
+### Auto define shouldComponentUpdate function
+The library records all gets of interactor state during rendering process, based on it 
+defines standard implementation of shouldComponentUpdate function that compares used values with new ones.
+
+```js
+class Example extends React.Component {
+  render() {
+    return (
+      <div>
+        { this.p('user.loaded') &&
+          <div>
+            <h1>{this.p('user.name')}</h1>
+            <h4>{this.p('user.description')}</h4>
+          </div>
+        }
+      </div>
+    )
+  }
+}
+
+// example state changes:
+
+// { loaded: false } -> { loaded: false, name: 'name' }
+// will not update component (loaded didn't change, other properties not used)
+
+// { loaded: false } -> { loaded: true, name: 'name', description: 'description' }
+// will update component
 ```
 
 ## Installation
 
 ### 1. Npm install
 ```
-npm install conventional-redux
+npm install conventional-redux --save
 ```
 
 ### 2. Add conventional-redux middleware
@@ -310,7 +323,7 @@ npm install conventional-redux
 import { conventionalReduxMiddleware } from 'conventional-redux';
 const middleware = [conventionalReduxMiddleware, thunk, routerMiddleware(history)]
 ```
-Example: https://github.com/mjaneczek/react-conventional-redux-starter-kit/blob/master/src/store/createStore.js#L11
+Eg: https://github.com/mjaneczek/react-conventional-redux-starter-kit/blob/master/src/store/createStore.js#L11
 
 ### 3. Add conventional-redux reducers
 ```js
@@ -322,32 +335,57 @@ return combineReducers({
   ...asyncReducers
 })
 ```
-Example: https://github.com/mjaneczek/react-conventional-redux-starter-kit/blob/master/src/store/reducers.js#L9
+Eg: https://github.com/mjaneczek/react-conventional-redux-starter-kit/blob/master/src/store/reducers.js#L9
 
 ### 4. Register interactors
-
+### a) Static way
+You can predefine all interactors and next connect specific interactors via `connectInteractor` method.
 ```js
-import {registerInteractors} from 'conventional-redux';
-
-registerInteractor('todo', new TodoInteractor());
-
-// or
-
+// somewhere before connect:
 registerInteractors({
-  'repos': new ResourceInteractor('https://api.github.com/users/{}/repos'),
-  'gists': new ResourceInteractor('https://api.github.com/users/{}/gists'),
-  'readme': new ResourceInteractor('https://api.github.com/repos/{}/readme'),
-  'github_profile': new GithubProfileInteractor()
+  'currentUser': new CurrentUserInteractor(),
+  'currentLanguage': new CurrentLanguageInteractor(),
+  'modals': new ModalsInteractor(),
+  'counter': new CounterInteractor()
 });
+
+// example component:
+export default connectInteractors(Counter, ['counter', 'currentUser']);
 ```
 
-### 5. Dispatch!
+### b) Dynamic way
+You can register interactor as dynamic and remove it after some action (eg. based on current route).
+
+Setup
+```js
+setRecreateReducerFunction(() => store.replaceReducer(makeRootReducer()));
+```
+Eg: https://github.com/mjaneczek/react-conventional-redux-starter-kit/blob/master/src/store/createStore.js#L37
 
 ```js
-this.props.dispatch('interactorName:actionWithoutParams');
-// or
-this.props.dispatch(['interactorName:actionName', 'param1', 'param2']);
+// routes/userdata/idnex.js
+export default () => {
+  return { path: 'userdata', getComponent: (state, cb) => {
+    // remove all dynamic interactors and replace with specified
+    // next recreate reducer using function set by setRecreateReducerFunction
+    replaceDynamicInteractors({userdata: new GithubUserdataInteractor()});
+    
+    // connect all static and dynamic interactors
+    cb(null, connectAllInteractors(GithubUserdataComponent))
+  }}
+}
 ```
+
+### c) Combined way
+You can use static way for common/global interactors like `CurrentUserInteractor` or `ModalsInteractor` and
+dynamic for route specific interactors like `CounterInteractor`, `GithubUserdataInteractor`.
 
 ## Example application
 https://github.com/mjaneczek/react-conventional-redux-starter-kit/tree/master/src/routes
+
+## Contributing
+1. Fork it ( https://github.com/mjaneczek/conventional-redux/fork )
+2. Create your feature branch (`git checkout -b my-new-feature`)
+3. Commit your changes (`git commit -am 'Add some feature'`)
+4. Push to the branch (`git push origin my-new-feature`)
+5. Create a new Pull Request
