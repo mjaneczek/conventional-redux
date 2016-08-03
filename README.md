@@ -252,6 +252,23 @@ export default class ModalsInteractor {
 }
 ```
 
+### Interactor computed reducers
+You can define a computed reducer method if you need to merge results from two or more actions.
+```js
+export default class ProjectInteractor extends RESTInteractor {
+  // key: reducer method name
+  // array: dependent actions
+  computedReducers = {
+    _groupProjects: ['CONV_REDUX/currentUser:set', 'CONV_REDUX/teams:fetchSuccess']
+  };
+
+  // fires only when all specific actions are already dispatched (and recalculates when value changed)
+  _groupProjects(user, projects) {
+    return { ...this.state, all: projects, owned: lodash.filter(projects, t => t.user_id == user.id) };
+  }
+}
+```
+
 ### Connect (all) interactors
 Auto attach all interactor actions to `this.interactorName` hash, interactor state is avaliable via
 `this.p('interactorName')` method. 
