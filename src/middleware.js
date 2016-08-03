@@ -25,9 +25,11 @@ export const conventionalReduxMiddleware = store => next => action => {
 
 function addAutoDispatchToPromise(promise, store, actionName) {
   promise.then((data) => {
-    store.dispatch([actionName + 'Success', data])
+    try { store.dispatch([actionName + 'Success', data]) }
+    catch(err) { console.error(err.stack) }
   }).catch((error) => {
-    store.dispatch([actionName + 'Error', error])
+    try { store.dispatch([actionName + 'Error', error])}
+    catch(err) { console.error(err.stack) }
   });
 }
 
