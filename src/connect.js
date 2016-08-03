@@ -66,8 +66,9 @@ function defineShouldComponentUpdate(klass) {
 function interactorActionHash(interactorName, component) {
   let actionHash = {};
 
-  actionNames(interactors[interactorName]).forEach(methodName => actionHash[methodName] = function(a1, a2, a3, a4, a5, a6, a7, a8, a9) {
-    return component.props.dispatch([interactorName + ':' + methodName, a1, a2, a3, a4, a5, a6, a7, a8, a9])
+  actionNames(interactors[interactorName]).forEach(methodName => actionHash[methodName] = function() {
+    var args = Array.prototype.slice.call(arguments);
+    return component.props.dispatch([interactorName + ':' + methodName].concat(args))
   });
 
   return actionHash;

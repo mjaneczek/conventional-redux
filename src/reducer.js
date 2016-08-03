@@ -24,11 +24,42 @@ export function conventionalReducer(name) {
       }
     }
 
-    if(interactor.externalDependencies && interactor.externalDependencies[action.type]) {
-      interactor.state = interactor.externalDependencies[action.type].apply(interactor, action.args);
-    }
+    handleExternalDependencies(interactor, action);
+    handleComputedReducers(interactor, action);
 
     return interactor.state;
+  }
+}
+
+function handleExternalDependencies(interactor, action) {
+  if(interactor.externalDependencies && interactor.externalDependencies[action.type]) {
+    interactor.state = interactor.externalDependencies[action.type].apply(interactor, action.args);
+  }
+}
+
+function handleComputedReducers(interactor, action) {
+  if(interactor.computedReducers) {
+    Object.keys(interactor.computedReducers).forEach((computedReducer) => {
+      let actionNames = interactor.computedReducers[computedReducer];
+
+      if(actionNames.includes(action.type)) {
+        interactor.state = {...interactor.state, _combinedReducerValues: {...interactor.state._combinedReducerValues, [action.type]: action.args}}
+      }
+
+      callCombineReducerIfFed(interactor, actionNames, computedReducer);
+    });
+  }
+}
+
+function callCombineReducerIfFed(interactor, actionNames, computedReducer) {
+  if(interactor.state._combinedReducerValues) {
+    let actionValues = actionNames.map(action => interactor.state._combinedReducerValues[action]);
+
+    if(interactor.state._combinedReducerValues && !actionValues.includes(undefined)) {
+      let reducerArguments = [];
+      actionValues.forEach(actionArray => actionArray.forEach(value => reducerArguments.push(value)));
+      interactor.state = interactor[computedReducer].apply(interactor, reducerArguments)
+    }
   }
 }
 
