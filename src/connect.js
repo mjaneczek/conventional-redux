@@ -45,6 +45,10 @@ function defineActionProperties(klass, interactorNames) {
 
 function defineShouldComponentUpdate(klass) {
   klass.prototype.shouldComponentUpdate = function(nextProps, nextState) {
+    if(this.connectedInteractors().some(interactorName => typeof nextProps[interactorName] == 'undefined')) {
+      return false;
+    }
+
     let result = this.__touchedProperties.some((propertyKeyChain) => {
       const currentValue = getProperty(this.props, propertyKeyChain);
       const newValue = getProperty(nextProps, propertyKeyChain);
