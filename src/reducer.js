@@ -1,4 +1,5 @@
-import { interactors } from '../lib/index'
+import { interactors } from './index'
+import { performedActions } from './middleware';
 
 export function conventionalReducers() {
   var conventionalReducersHash = {};
@@ -43,23 +44,19 @@ function handleComputedReducers(interactor, action) {
       let actionNames = interactor.computedReducers[computedReducer];
 
       if(actionNames.includes(action.type)) {
-        interactor.state = {...interactor.state, _combinedReducerValues: {...interactor.state._combinedReducerValues, [action.type]: action.args}}
+        callCombineReducerIfFed(interactor, actionNames, computedReducer);
       }
-
-      callCombineReducerIfFed(interactor, actionNames, computedReducer);
     });
   }
 }
 
 function callCombineReducerIfFed(interactor, actionNames, computedReducer) {
-  if(interactor.state._combinedReducerValues) {
-    let actionValues = actionNames.map(action => interactor.state._combinedReducerValues[action]);
+  let actions = actionNames.map(action => performedActions[action]);
 
-    if(interactor.state._combinedReducerValues && !actionValues.includes(undefined)) {
-      let reducerArguments = [];
-      actionValues.forEach(actionArray => actionArray.forEach(value => reducerArguments.push(value)));
-      interactor.state = interactor[computedReducer].apply(interactor, reducerArguments)
-    }
+  if(!actions.includes(undefined)) {
+    let reducerArguments = [];
+    actions.forEach(action => action.args.forEach(value => reducerArguments.push(value)));
+    interactor.state = interactor[computedReducer].apply(interactor, reducerArguments)
   }
 }
 
