@@ -1,4 +1,5 @@
 import { interactors } from './index';
+import { getProperty } from './connect';
 
 export var performedActions = {};
 
@@ -6,7 +7,17 @@ export const conventionalReduxMiddleware = store => next => action => {
   if (isStringOrArray(action)) {
     var [interactorSymbol, interactorMethodName, actionName, args] = parseAction(action);
     var interactor = getInteractor(interactorSymbol);
-    interactor.dispatch = store.dispatch;
+
+    interactor._dispatch = store.dispatch;
+    interactor.storeState = store.getState();
+
+    interactor.p = (propertyString) => {
+      return getProperty(interactor.storeState, propertyString);
+    };
+
+    interactor.dispatch = (actionName, ...args) => {
+      return interactor._dispatch([actionName].concat(args));
+    }
 
     var actionHash = {type: 'CONV_REDUX/' + actionName, args: args};
     performedActions[actionHash.type] = actionHash;

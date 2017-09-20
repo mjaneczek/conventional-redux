@@ -99,7 +99,7 @@ function actionNames(interactor, actionNamesList = []) {
   }
 }
 
-function connectHash(interactorNames, state) {
+export function connectHash(interactorNames, state) {
   let connectHash = {};
 
   interactorNames.forEach(interactorName => connectHash[interactorName] = state[interactorName]);
@@ -107,7 +107,7 @@ function connectHash(interactorNames, state) {
   return connectHash;
 }
 
-function getProperty(object, keyChain) {
+export function getProperty(object, keyChain) {
   return keyChain.split('.').reduce((o,i)=> {
     if(!o) { return null }
     return o[i]
