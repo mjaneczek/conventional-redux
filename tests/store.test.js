@@ -2,6 +2,7 @@ import Store from '~/store';
 import FakeInteractor from './stubs/fake_interactor';
 
 describe('interactor store', () => {
+  const fakeInteractor = new FakeInteractor();
   let store;
 
   beforeEach(() => {
@@ -13,61 +14,46 @@ describe('interactor store', () => {
   });
 
   test('registers an interactor', () => {
-    const projectsInteractor = new FakeInteractor();
-
-    store.registerInteractor('projects', projectsInteractor);
-    expect(store.interactors()['projects']).toEqual(projectsInteractor);
+    store.registerInteractor('projects', fakeInteractor);
+    expect(store.interactors()['projects']).toEqual(fakeInteractor);
   });
 
   test('registers many interactors', () => {
-    const projectsInteractor = new FakeInteractor();
-    const usersInteractor = new FakeInteractor();
+    store.registerInteractors({projects: fakeInteractor, users: fakeInteractor});
 
-    store.registerInteractors({projects: projectsInteractor, users: usersInteractor});
-
-    expect(store.interactors()['projects']).toEqual(projectsInteractor);
-    expect(store.interactors()['users']).toEqual(usersInteractor);
+    expect(Object.keys(store.interactors())).toEqual(['projects', 'users']);
+    expect(store.interactors()['projects']).toEqual(fakeInteractor);
+    expect(store.interactors()['users']).toEqual(fakeInteractor);
   });
 
   describe('dynamic option', () => {
     test('registers a dynamic interactor', () => {
-      const projectsInteractor = new FakeInteractor();
-
-      store.registerInteractor('projects', projectsInteractor, { dynamic: true });
-      expect(store.interactors()['projects']).toEqual(projectsInteractor);
+      store.registerInteractor('projects', fakeInteractor, { dynamic: true });
+      expect(store.interactors()['projects']).toEqual(fakeInteractor);
     });
 
     test('registers many dynamic interactor', () => {
-      const projectsInteractor = new FakeInteractor();
-      const usersInteractor = new FakeInteractor();
+      store.registerInteractors({projects: fakeInteractor, users: fakeInteractor}, { dynamic: true });
 
-      store.registerInteractors({projects: projectsInteractor, users: usersInteractor}, { dynamic: true });
-
-      expect(store.interactors()['projects']).toEqual(projectsInteractor);
-      expect(store.interactors()['users']).toEqual(usersInteractor);
+      expect(Object.keys(store.interactors())).toEqual(['projects', 'users']);
+      expect(store.interactors()['projects']).toEqual(fakeInteractor);
+      expect(store.interactors()['users']).toEqual(fakeInteractor);
     });
 
     test('removes all dynamic interactors', () => {
-      const projectsInteractor = new FakeInteractor();
-      const usersInteractor = new FakeInteractor();
-
-      store.registerInteractor('projects', projectsInteractor, { dynamic: true });
-      store.registerInteractors({users: usersInteractor}, { dynamic: true });
+      store.registerInteractor('projects', fakeInteractor, { dynamic: true });
+      store.registerInteractors({users: fakeInteractor}, { dynamic: true });
 
       store.removeDynamicInteractors();
       expect(store.interactors()).toEqual({});
     });
 
     test('replaces dynamic interactors', () => {
-      const projectsInteractor = new FakeInteractor();
-      const usersInteractor = new FakeInteractor();
-
-      store.registerInteractors({projects: projectsInteractor, users: usersInteractor}, { dynamic: true });
-
-      const clientsInteractor = new FakeInteractor();
-      store.replaceDynamicInteractors({clients: clientsInteractor});
+      store.registerInteractors({projects: fakeInteractor, users: fakeInteractor}, { dynamic: true });
+      store.replaceDynamicInteractors({clients: fakeInteractor});
 
       expect(Object.keys(store.interactors())).toEqual(['clients']);
+      expect(store.interactors()['clients']).toEqual(fakeInteractor);
     });
 
     test('sets recreate reducer function', () => {

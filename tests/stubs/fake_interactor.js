@@ -1,3 +1,1 @@
-export default class FakeInteractor {
-
-}
+export default class FakeInteractor {}

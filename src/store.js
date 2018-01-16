@@ -1,6 +1,6 @@
-export default class Store {
+class Store {
   registeredInteractors = {};
-  dynamicInteractorKeys = [];
+  dynamicInteractorNames = [];
   recreateReducerFunction = null;
 
   interactors() {
@@ -9,7 +9,7 @@ export default class Store {
 
   registerInteractor(name, interactor, options = {}) {
     if(options['dynamic']) {
-      this.dynamicInteractorKeys.push(name)
+      this.dynamicInteractorNames.push(name)
     }
 
     this.registeredInteractors[name] = interactor;
@@ -21,16 +21,6 @@ export default class Store {
     }
   }
 
-  removeDynamicInteractors() {
-    this.dynamicInteractorKeys.forEach(key => {
-      delete this.registeredInteractors[key]
-    })
-  }
-
-  setRecreateReducerFunction(func) {
-    this.recreateReducerFunction = func;
-  }
-
   replaceDynamicInteractors(interactors) {
     this.removeDynamicInteractors();
     this.registerInteractors(interactors, { dynamic: true });
@@ -39,4 +29,16 @@ export default class Store {
       this.recreateReducerFunction();
     }
   }
+
+  removeDynamicInteractors() {
+    this.dynamicInteractorNames.forEach(name => {
+      delete this.registeredInteractors[name]
+    })
+  }
+
+  setRecreateReducerFunction(func) {
+    this.recreateReducerFunction = func;
+  }
 }
+
+export default Store
