@@ -1,0 +1,28 @@
+{
+  "name": "conventional-redux",
+  "version": "1.0.0",
+  "description": "Redux with conventions!",
+  "main": "lib/index.js",
+  "scripts": {
+    "prepublish": "babel src --out-dir lib",
+    "test": "jest"
+  },
+  "keywords": [
+    "react",
+    "redux",
+    "convention"
+  ],
+  "author": "Michal Janeczek",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.0",
+    "babel-jest": "^22.1.0",
+    "babel-plugin-root-import": "^5.1.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1",
+    "jest": "^22.1.1",
+    "regenerator-runtime": "^0.11.1"
+  }
+}
