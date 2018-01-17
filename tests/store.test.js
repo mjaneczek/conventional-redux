@@ -22,22 +22,27 @@ describe('interactor store', () => {
     store.registerInteractors({projects: fakeInteractor, users: fakeInteractor});
 
     expect(Object.keys(store.interactors())).toEqual(['projects', 'users']);
-    expect(store.interactors()['projects']).toEqual(fakeInteractor);
-    expect(store.interactors()['users']).toEqual(fakeInteractor);
+    expect(store.get('projects')).toEqual(fakeInteractor);
+    expect(store.get('users')).toEqual(fakeInteractor);
+  });
+
+  test('gets interactor by name', () => {
+    store.registerInteractor('projects', fakeInteractor);
+    expect(store.get('projects')).toEqual(fakeInteractor);
   });
 
   describe('dynamic option', () => {
     test('registers a dynamic interactor', () => {
       store.registerInteractor('projects', fakeInteractor, { dynamic: true });
-      expect(store.interactors()['projects']).toEqual(fakeInteractor);
+      expect(store.get('projects')).toEqual(fakeInteractor);
     });
 
     test('registers many dynamic interactor', () => {
       store.registerInteractors({projects: fakeInteractor, users: fakeInteractor}, { dynamic: true });
 
       expect(Object.keys(store.interactors())).toEqual(['projects', 'users']);
-      expect(store.interactors()['projects']).toEqual(fakeInteractor);
-      expect(store.interactors()['users']).toEqual(fakeInteractor);
+      expect(store.get('projects')).toEqual(fakeInteractor);
+      expect(store.get('users')).toEqual(fakeInteractor);
     });
 
     test('removes all dynamic interactors', () => {
@@ -53,7 +58,7 @@ describe('interactor store', () => {
       store.replaceDynamicInteractors({clients: fakeInteractor});
 
       expect(Object.keys(store.interactors())).toEqual(['clients']);
-      expect(store.interactors()['clients']).toEqual(fakeInteractor);
+      expect(store.get('clients')).toEqual(fakeInteractor);
     });
 
     test('sets recreate reducer function', () => {

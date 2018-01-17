@@ -12,32 +12,34 @@ class Middleware {
   }
 
   perform() {
-    if(this._isActionStringOrArray()) {
-      this._parseAction();
-
-      const interactor = this.interactorStore.interactors()[this.interactorName];
-
-      if(interactor) {
-        interactor.dispatch = this.store.dispatch;
-
-        if(interactor[this.interactorMethod]) {
-          let actionResult = interactor[this.interactorMethod].apply(interactor, this.args);
-
-          if (this._isPromise(actionResult)) {
-            this._autoDispatchPromise(actionResult);
-          }
-
-        }
-
-      } else {
-        throw new Error(`No interactor registered as ${this.interactorName}!`);
-      }
-
-
-      return this.next(this._conventionalActionHash());
+    if(this._isActionStringOrArray() == false) {
+      return this.next(this.action);
     }
 
-    return this.next(this.action);
+    this._parseAction();
+    this._handleInteractorAction();
+    return this.next(this._conventionalActionHash());
+  }
+
+  _handleInteractorAction() {
+    const interactor = this.interactorStore.get(this.interactorName);
+
+    if(interactor == null) {
+      throw new Error(`No interactor registered as ${this.interactorName}!`);
+    }
+
+    interactor.dispatch = this.store.dispatch;
+    this._callInteractorAction(interactor);
+  }
+
+  _callInteractorAction(interactor) {
+    if(interactor[this.interactorMethod]) {
+      let actionResult = interactor[this.interactorMethod].apply(interactor, this.args);
+
+      if (this._isPromise(actionResult)) {
+        this._autoDispatchPromise(actionResult);
+      }
+    }
   }
 
   _autoDispatchPromise(promise) {

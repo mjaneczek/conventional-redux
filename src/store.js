@@ -3,6 +3,10 @@ class Store {
   dynamicInteractorNames = [];
   recreateReducerFunction = null;
 
+  get(name) {
+    return this.registeredInteractors[name];
+  }
+
   interactors() {
     return this.registeredInteractors;
   }
