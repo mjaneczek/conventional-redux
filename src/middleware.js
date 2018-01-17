@@ -14,13 +14,38 @@ class Middleware {
   perform() {
     if(this._isActionStringOrArray()) {
       this._parseAction();
+
       const interactor = this.interactorStore.interactors()[this.interactorName];
-      interactor[this.interactorMethod].apply(interactor, this.args);
+
+      if(interactor) {
+        interactor.dispatch = this.store.dispatch;
+
+        if(interactor[this.interactorMethod]) {
+          let actionResult = interactor[this.interactorMethod].apply(interactor, this.args);
+
+          if (this._isPromise(actionResult)) {
+            this._autoDispatchPromise(actionResult);
+          }
+
+        }
+
+      } else {
+        throw new Error(`No interactor registered as ${this.interactorName}!`);
+      }
+
 
       return this.next(this._conventionalActionHash());
     }
 
     return this.next(this.action);
+  }
+
+  _autoDispatchPromise(promise) {
+    promise.then((data) => {
+      this.store.dispatch([this.actionName + 'Success', data])
+    }).catch((error) => {
+      this.store.dispatch([this.actionName + 'Error', error])
+    });
   }
 
   _conventionalActionHash() {
@@ -43,6 +68,10 @@ class Middleware {
 
   _isActionStringOrArray() {
     return typeof this.action === 'string' || this.action instanceof String || this.action instanceof Array;
+  }
+
+  _isPromise(object) {
+    return (object && 'function' === typeof object.then);
   }
 }
 
