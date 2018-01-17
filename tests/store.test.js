@@ -62,7 +62,7 @@ describe('interactor store', () => {
       store.setRecreateReducerFunction(mockCallback);
       store.replaceDynamicInteractors({});
 
-      expect(mockCallback.mock.calls.length).toBe(1);
+      expect(mockCallback.mock.calls.length).toEqual(1);
     });
   });
 });
