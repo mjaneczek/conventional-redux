@@ -28,8 +28,25 @@ class Middleware {
       throw new Error(`No interactor registered as ${this.interactorName}!`);
     }
 
-    interactor.dispatch = this.store.dispatch;
+    this._defineInteractorMethods(interactor);
     this._callInteractorAction(interactor);
+  }
+
+  _defineInteractorMethods(interactor) {
+    interactor._storeState = this.store.getState();
+    interactor._dispatch = this.store.dispatch;
+
+    interactor.dispatch = (actionName, ...args) => {
+      return interactor._dispatch([actionName].concat(args));
+    }
+
+    interactor.d = interactor.dispatch;
+
+    interactor.property = (propertyString) => {
+      return getProperty(interactor._storeState, propertyString);
+    };
+
+    interactor.p = interactor.property;
   }
 
   _callInteractorAction(interactor) {
@@ -75,6 +92,13 @@ class Middleware {
   _isPromise(object) {
     return (object && 'function' === typeof object.then);
   }
+}
+
+export function getProperty(object, keyChain) {
+  return keyChain.split('.').reduce((o,i)=> {
+    if(!o) { return null }
+    return o[i]
+  }, object);
 }
 
 export default Middleware

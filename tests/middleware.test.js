@@ -1,5 +1,6 @@
 import Store from '~/store';
 import Middleware from '~/middleware';
+import FakeStore from './stubs/fake_store';
 import FakeInteractor from './stubs/fake_interactor';
 
 describe('interactor middleware', () => {
@@ -7,7 +8,7 @@ describe('interactor middleware', () => {
 
   beforeEach(() => {
     nextMock = jest.fn();
-    store = { dispatch: jest.fn() };
+    store = new FakeStore();
 
     interactorStore = new Store();
     interactorStore.registerInteractor('users', new FakeInteractor());
@@ -48,11 +49,29 @@ describe('interactor middleware', () => {
     expect(() => buildMiddleware().perform()).toThrowError('No interactor registered as invalid-interactor-name!');
   });
 
-  test('delegates dispatch function from the store to interactors', () => {
+  test('delegates native _dispatch function from the store to interactors', () => {
     action = 'users:all';
     buildMiddleware().perform();
 
     expect(store.dispatch.mock.calls.length).toEqual(1);
+    expect(store.dispatch.mock.calls[0][0]).toEqual(['users:fetch', 'all']);
+  });
+
+  test('defines easier dispatch method (and alias d) in interactors', () => {
+    action = 'users:update';
+    buildMiddleware().perform();
+
+    expect(store.dispatch.mock.calls.length).toEqual(2);
+    expect(store.dispatch.mock.calls[0][0]).toEqual(['users:update', {id: 1}]);
+    expect(store.dispatch.mock.calls[1][0]).toEqual(['users:update', {id: 1}]);
+  });
+
+  test('defines property method (and alias p) in interactors', () => {
+    action = 'users:logout';
+    buildMiddleware().perform();
+
+    expect(store.dispatch.mock.calls.length).toEqual(1);
+    expect(store.dispatch.mock.calls[0][0]).toEqual(['users:put', {action: 'logout', user: 'fake-current-user-id'}]);
   });
 
   test('dispatches a promise returned from the interactor action', (done) => {
