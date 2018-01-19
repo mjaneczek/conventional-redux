@@ -21,16 +21,17 @@ class ReducerGenerator {
         state = this._getDefaultState(interactor);
 
       this._defineStateGetter(interactor, state);
+      return this._handleConventionalAction(action, interactor) || state;
+    }
+  }
 
-      if(action.type && action.type.startsWith("CONV_REDUX/" + name + ':')) {
-        const reduceMethodName = this._getReduceMethodName(action);
+  _handleConventionalAction(action, interactor) {
+    if(action.type && action.type.startsWith(`CONV_REDUX/${name}:`)) {
+      const reduceMethodName = this._getReduceMethodName(action);
 
-        if (interactor[reduceMethodName]) {
-          return interactor[reduceMethodName].apply(interactor, action.args);
-        }
+      if (interactor[reduceMethodName]) {
+        return interactor[reduceMethodName].apply(interactor, action.args);
       }
-
-      return state;
     }
   }
 
