@@ -1,3 +1,5 @@
+import { getProperty } from '~/utils';
+
 class Middleware {
   actionName = null;
   args = null;
@@ -92,13 +94,6 @@ class Middleware {
   _isPromise(object) {
     return (object && 'function' === typeof object.then);
   }
-}
-
-export function getProperty(object, keyChain) {
-  return keyChain.split('.').reduce((o,i)=> {
-    if(!o) { return null }
-    return o[i]
-  }, object);
 }
 
 export default Middleware
