@@ -23,4 +23,12 @@ export default class FakeInteractor {
 
   createSuccess = jest.fn();
   createError = jest.fn();
+
+  onFollow(userId) {
+    return { ...this.state, followedUser: userId };
+  }
+
+  defaultState() {
+    return { defaultState: true };
+  }
 }
