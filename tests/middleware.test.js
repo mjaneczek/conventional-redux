@@ -74,6 +74,14 @@ describe('interactor middleware', () => {
     expect(store.dispatch.mock.calls[0][0]).toEqual(['users:put', {action: 'logout', user: 'fake-current-user-id'}]);
   });
 
+  test('defines readonly state property in interactor', () => {
+    action = 'users:logout';
+    buildMiddleware().perform();
+
+    const interactor = interactorStore.get('users');
+    expect(interactor.state).toEqual(store.getState()['users']);
+  });
+
   test('dispatches a promise returned from the interactor action', (done) => {
     action = ['users:create', 'success']
     buildMiddleware().perform();

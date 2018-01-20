@@ -36,6 +36,6 @@ describe('reducer generator', () => {
     expect(reduce(exampleState, { 
       type: 'CONV_REDUX/users:follow',
       args: [1] }
-    )).toEqual(Object.assign(exampleState, {followedUser: 1}));
+    )).toEqual(Object.assign({}, exampleState, {followedUser: 1}));
   });
 });

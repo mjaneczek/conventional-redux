@@ -1,3 +1,5 @@
+import { defineStateGetter } from '~/utils';
+
 class ReducerGenerator {
   constructor({interactorStore}) {
     this.interactorStore = interactorStore;
@@ -20,12 +22,12 @@ class ReducerGenerator {
       if(state == null)
         state = this._getDefaultState(interactor);
 
-      this._defineStateGetter(interactor, state);
-      return this._handleConventionalAction(action, interactor) || state;
+      defineStateGetter(interactor, state);
+      return this._handleConventionalAction(name, action, interactor) || state;
     }
   }
 
-  _handleConventionalAction(action, interactor) {
+  _handleConventionalAction(name, action, interactor) {
     if(action.type && action.type.startsWith(`CONV_REDUX/${name}:`)) {
       const reduceMethodName = this._getReduceMethodName(action);
 
@@ -46,14 +48,6 @@ class ReducerGenerator {
   _getReduceMethodName(action) {
     const methodName = action.type.replace('CONV_REDUX/', '').split(':').pop();
     return 'on' + methodName.charAt(0).toUpperCase() + methodName.slice(1);
-  }
-
-  _defineStateGetter(interactor, state) {
-    Object.defineProperty(interactor, 'state', {
-      get() { return state; },
-      set(_) { throw new Error('Cannot modify readonly property state!') },
-      configurable: true
-    });
   }
 }
 

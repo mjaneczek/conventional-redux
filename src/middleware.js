@@ -1,4 +1,4 @@
-import { getProperty } from '~/utils';
+import { getProperty, defineStateGetter } from '~/utils';
 
 class Middleware {
   actionName = null;
@@ -37,6 +37,8 @@ class Middleware {
   _defineInteractorMethods(interactor) {
     interactor._storeState = this.store.getState();
     interactor._dispatch = this.store.dispatch;
+
+    defineStateGetter(interactor, interactor._storeState[this.interactorName]);
 
     interactor.dispatch = (actionName, ...args) => {
       return interactor._dispatch([actionName].concat(args));
