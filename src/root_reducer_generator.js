@@ -1,4 +1,5 @@
 import ReducerGenerator from '~/reducer_generator';
+import StateAdapter from '~/state_adapter';
 
 class RootReducerGenerator {
   constructor({interactorStore}) {
@@ -17,9 +18,7 @@ class RootReducerGenerator {
 
     return (state, action) => {
       if(action.type == "@@redux/INIT") {
-        Object.keys(state)
-          .filter(key => !reducerKeys.includes(key))
-          .forEach(key => delete state[key]);
+        state = new StateAdapter(state).clear(reducerKeys)
       }
 
       return appReducer(state, action)

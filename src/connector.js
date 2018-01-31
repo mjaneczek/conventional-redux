@@ -1,3 +1,4 @@
+import StateAdapter from '~/state_adapter';
 import { getProperty } from '~/utils';
 
 class Connector {
@@ -44,7 +45,9 @@ class Connector {
 
   _connectHash(interactorNames, state) {
     let connectHash = {};
-    interactorNames.forEach(interactorName => connectHash[interactorName] = state[interactorName]);
+    const stateAdapter = new StateAdapter(state);
+
+    interactorNames.forEach(interactorName => connectHash[interactorName] = stateAdapter.get(interactorName));
     return connectHash;
   }
 }

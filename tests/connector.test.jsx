@@ -1,3 +1,4 @@
+import { fromJS } from 'immutable';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import Store from '~/store';
@@ -8,7 +9,7 @@ describe('connector', () => {
   let connector, fakeWrapFunction, fakeConnectFunction, fakeFunctionComponent, exampleState;
 
   beforeEach(() => {
-    exampleState = {users: { current: 'user1', dat: ['users-data'] }, projects: { scope: 'public', data: ['projects-data'] }, dispatch: jest.fn() };
+    exampleState = {users: { current: 'user1', data: ['users-data'] }, projects: { scope: 'public', data: ['projects-data'] }, dispatch: jest.fn() };
     fakeWrapFunction = jest.fn();
     fakeConnectFunction = jest.fn().mockReturnValue(fakeWrapFunction);
     fakeFunctionComponent = jest.fn().mockReturnValue('<h1>fake</h1>');
@@ -78,5 +79,12 @@ describe('connector', () => {
 
     expect(exampleState['dispatch'].mock.calls[0][0]).toEqual(['users:fetch', 'all']);
     expect(exampleState['dispatch'].mock.calls[1][0]).toEqual(['projects:delete', 1]);
+  });
+
+  test('works with immutablejs state', () => {
+    connector.connectInteractors(fakeFunctionComponent, ['users']);
+
+    const generatedMapStateToPropsFunction = fakeConnectFunction.mock.calls[0][0];
+    expect(generatedMapStateToPropsFunction(fromJS(exampleState))).toEqual({users: fromJS(exampleState['users'])});
   });
 });
