@@ -3,10 +3,11 @@ import FakeInteractor from './stubs/fake_interactor';
 
 describe('interactor store', () => {
   const fakeInteractor = new FakeInteractor();
-  let store;
+  let store, fakeRecreateReducerFunction;
 
   beforeEach(() => {
     store = new Store();
+    fakeRecreateReducerFunction = jest.fn();
   });
 
   test('no interactors by default', () => {
@@ -55,6 +56,7 @@ describe('interactor store', () => {
 
     test('replaces dynamic interactors', () => {
       store.registerInteractors({projects: fakeInteractor, users: fakeInteractor}, { dynamic: true });
+      store.setRecreateReducerFunction(fakeRecreateReducerFunction);
       store.replaceDynamicInteractors({clients: fakeInteractor});
 
       expect(Object.keys(store.interactors())).toEqual(['clients']);
@@ -62,12 +64,14 @@ describe('interactor store', () => {
     });
 
     test('sets recreate reducer function', () => {
-      const mockCallback = jest.fn();
-
-      store.setRecreateReducerFunction(mockCallback);
+      store.setRecreateReducerFunction(fakeRecreateReducerFunction);
       store.replaceDynamicInteractors({});
 
-      expect(mockCallback.mock.calls.length).toEqual(1);
+      expect(fakeRecreateReducerFunction.mock.calls.length).toEqual(1);
+    });
+
+    test('throws error when no recreate reducer function passed', () => {
+      expect(() => store.replaceDynamicInteractors({})).toThrowError(/need to set recreate reducer function/);
     });
   });
 });

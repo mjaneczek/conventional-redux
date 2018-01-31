@@ -29,9 +29,11 @@ class Store {
     this.removeDynamicInteractors();
     this.registerInteractors(interactors, { dynamic: true });
 
-    if(this.recreateReducerFunction) {
-      this.recreateReducerFunction();
+    if(!this.recreateReducerFunction) {
+      throw new Error('You need to set recreate reducer function in order to replace dynamic interactors!');
     }
+
+    this.recreateReducerFunction();
   }
 
   removeDynamicInteractors() {
