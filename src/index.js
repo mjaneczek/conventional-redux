@@ -2,6 +2,7 @@ import { connect } from 'react-redux'
 import { combineReducers } from 'redux'
 import Store from '~/store';
 import Middleware from '~/middleware';
+import RootReducerGenerator from '~/root_reducer_generator';
 import ReducerGenerator from '~/reducer_generator';
 import Connector from '~/connector';
 
