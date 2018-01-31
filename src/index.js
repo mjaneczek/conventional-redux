@@ -1,4 +1,5 @@
 import { connect } from 'react-redux'
+import { combineReducers } from 'redux'
 import Store from '~/store';
 import Middleware from '~/middleware';
 import ReducerGenerator from '~/reducer_generator';
@@ -17,6 +18,10 @@ export function conventionalReducers() {
 
 export function connectInteractors(component, interactorNames) {
   return connector.connectInteractors(component, interactorNames);
+}
+
+export function createConventionalReduxRootReducer(reducers, combineReducersFunc = combineReducers) {
+  return new RootReducerGenerator({interactorStore}).root(reducers, combineReducersFunc);
 }
 
 export const registerInteractors = interactorStore.registerInteractors.bind(interactorStore)
