@@ -16,6 +16,8 @@ class Connector {
 
         return component(property, dispatch);
       }
+
+      wrappedComponent.displayName = component.name;
     } else {
       wrappedComponent = component;
 

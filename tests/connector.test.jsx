@@ -81,6 +81,14 @@ describe('connector', () => {
     expect(exampleState['dispatch'].mock.calls[1][0]).toEqual(['projects:delete', 1]);
   });
 
+  test('sets displayName for functional wrapper', () => {
+    const NamedComponent = (property, dispatch) => (<h1>hello</h1>);
+    connector.connectInteractors(NamedComponent, ['projects']);
+
+    const ConnectedComponent = fakeWrapFunction.mock.calls[0][0];
+    expect(ConnectedComponent.displayName).toEqual('NamedComponent');
+  });
+
   test('works with immutablejs state', () => {
     connector.connectInteractors(fakeFunctionComponent, ['users']);
 
