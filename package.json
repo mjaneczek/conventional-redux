@@ -27,5 +27,8 @@
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
     "regenerator-runtime": "^0.11.1"
+  },
+  "jest": {
+    "collectCoverage": true
   }
 }
