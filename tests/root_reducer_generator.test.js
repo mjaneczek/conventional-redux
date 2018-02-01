@@ -6,7 +6,7 @@ import FakeInteractor from './stubs/fake_interactor';
 describe('root reducer generator', () => {
   const fakeReducersHash = { route: () => 'state' }
   const fakeInteractor = new FakeInteractor();
-  const exampleState = { route: 'home', users: [], outdated: true };
+  const exampleState = { route: 'home', users: [] };
   let interactorStore, generator, reducers, reduce, combineReducersFunc, combinedReducer;
 
   beforeEach(() => {
@@ -14,7 +14,9 @@ describe('root reducer generator', () => {
     combineReducersFunc = jest.fn().mockReturnValue(combinedReducer)
 
     interactorStore = new Store();
-    interactorStore.registerInteractor('users', fakeInteractor);
+    interactorStore.registerInteractor('users', fakeInteractor, { dynamic: true });
+    interactorStore.setRecreateReducerFunction(()=>true);
+
     generator = new RootReducerGenerator({interactorStore: interactorStore});
     reduce = generator.root(fakeReducersHash, combineReducersFunc);
   });
@@ -29,12 +31,16 @@ describe('root reducer generator', () => {
   });
 
   test('removes dynamic part of the state (state without reducer) on redux init action', () => {
+    interactorStore.replaceDynamicInteractors({})
     reduce(exampleState, { type: '@@redux/INIT' })
-    expect(combinedReducer.mock.calls[0][0]).toEqual({route: 'home', users: []});
+
+    expect(combinedReducer.mock.calls[0][0]).toEqual({route: 'home'});
   });
 
   test('works with immutablejs state', () => {
+    interactorStore.replaceDynamicInteractors({})
     reduce(fromJS(exampleState), { type: '@@redux/INIT' })
-    expect(combinedReducer.mock.calls[0][0]).toEqual(fromJS({route: 'home', users: []}));
+
+    expect(combinedReducer.mock.calls[0][0]).toEqual(fromJS({route: 'home'}));
   });
 });

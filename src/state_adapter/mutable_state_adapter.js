@@ -7,9 +7,9 @@ class MutableStateAdapter {
     return this.state[property]
   }
 
-  clear(currentReducerKeys) {
+  clear(outdatedReducerKeys) {
     Object.keys(this.state)
-      .filter(key => !currentReducerKeys.includes(key))
+      .filter(key => outdatedReducerKeys.includes(key))
       .forEach(key => delete this.state[key]);
 
     return this.state;

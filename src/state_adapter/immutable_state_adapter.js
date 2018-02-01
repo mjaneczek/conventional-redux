@@ -7,8 +7,8 @@ class ImmutableStateAdapter {
     return this.state.get(property)
   }
 
-  clear(currentReducerKeys) {
-    return this.state.filter((value, key) => currentReducerKeys.includes(key))
+  clear(outdatedReducerKeys) {
+    return this.state.filter((value, key) => !outdatedReducerKeys.includes(key))
   }
 }
 

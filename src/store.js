@@ -2,6 +2,7 @@ class Store {
   registeredInteractors = {};
   dynamicInteractorNames = [];
   recreateReducerFunction = null;
+  removedDynamicInteractors = [];
 
   get(name) {
     return this.registeredInteractors[name];
@@ -37,7 +38,10 @@ class Store {
   }
 
   removeDynamicInteractors() {
+    this.removedDynamicInteractors = []
+
     this.dynamicInteractorNames.forEach(name => {
+      this.removedDynamicInteractors.push(name)
       delete this.registeredInteractors[name]
     })
   }

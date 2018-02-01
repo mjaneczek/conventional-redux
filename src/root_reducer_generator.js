@@ -18,7 +18,7 @@ class RootReducerGenerator {
 
     return (state, action) => {
       if(action.type == "@@redux/INIT") {
-        state = new StateAdapter(state).clear(reducerKeys)
+        state = new StateAdapter(state).clear(this.interactorStore.removedDynamicInteractors)
       }
 
       return appReducer(state, action)
