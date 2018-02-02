@@ -49,9 +49,8 @@ class ReducerGenerator {
       let newState = state;
 
       interactor.externalDependencies().forEach((externalDependency) => {
-        if(externalDependency.on == action.type || action.type.replace('CONV_REDUX/', '') == externalDependency.on ||
-          (Array.isArray(externalDependency.on) && externalDependency.on.includes(action.type)) || (Array.isArray(externalDependency.on) && externalDependency.on.includes(action.type.replace('CONV_REDUX/', '')))) {
-          newState = externalDependency.call.apply(interactor, action.args)
+        if(externalDependency.on.includes(action.type) || externalDependency.on.includes(action.type.replace('CONV_REDUX/', ''))) {
+          newState = interactor[externalDependency.call].apply(interactor, action.args);
         }
       });
 

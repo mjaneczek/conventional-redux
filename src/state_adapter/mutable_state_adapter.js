@@ -14,6 +14,10 @@ class MutableStateAdapter {
 
     return this.state;
   }
+
+  mapToProps() {
+    return this.state;
+  }
 }
 
 export default MutableStateAdapter

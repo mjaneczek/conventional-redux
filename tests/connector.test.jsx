@@ -89,10 +89,17 @@ describe('connector', () => {
     expect(ConnectedComponent.displayName).toEqual('NamedComponent');
   });
 
-  test('works with immutablejs state', () => {
+  test('works with immutablejs state when interactor passed', () => {
     connector.connectInteractors(fakeFunctionComponent, ['users']);
 
     const generatedMapStateToPropsFunction = fakeConnectFunction.mock.calls[0][0];
     expect(generatedMapStateToPropsFunction(fromJS(exampleState))).toEqual({users: fromJS(exampleState['users'])});
+  });
+
+  test('works with immutablejs state for all interactors', () => {
+    connector.connectInteractors(fakeFunctionComponent);
+
+    const generatedMapStateToPropsFunction = fakeConnectFunction.mock.calls[0][0];
+    expect(generatedMapStateToPropsFunction(fromJS(exampleState))).toEqual(fromJS(exampleState).toObject());
   });
 });

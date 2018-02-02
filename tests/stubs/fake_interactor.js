@@ -34,9 +34,9 @@ export default class FakeInteractor {
 
   externalDependencies() {
     return [
-      { on: 'LOGOUT', call: this.onClear },
-      { on: 'users:logout', call: this.onClear },
-      { on: ['users:makeAdmin', 'users:makeSuperAdmin'], call: this.onSetAdmin },
+      { on: ['LOGOUT'], call: 'onClear' },
+      { on: ['users:logout'], call: 'onClear' },
+      { on: ['users:makeAdmin', 'users:makeSuperAdmin'], call: 'onSetAdmin' },
     ]
   }
 
@@ -46,5 +46,12 @@ export default class FakeInteractor {
 
   onSetAdmin(adminType) {
     return { admin: adminType };
+  }
+
+  computedActions() {
+    return [
+      { after: ['users:computed_1', 'users:computed_2'], dispatch: 'users:computedAction', with: ['users.current_user_id'] },
+      { after: ['users:computed_1'], dispatch: 'users:secondComputedAction', with: ['users.state'] },
+    ]
   }
 }

@@ -37,7 +37,7 @@ class Connector {
     if(interactorNames) {
       return this.connectFunc((state) => this._connectHash(interactorNames, state))(wrappedComponent);
     } else {
-      return this.connectFunc((state) => state)(wrappedComponent);
+      return this.connectFunc((state) => new StateAdapter(state).mapToProps())(wrappedComponent);
     }
   }
 

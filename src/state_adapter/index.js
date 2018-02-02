@@ -15,6 +15,10 @@ class StateAdapter {
     return this.adapter.clear(currentReducerKeys);
   }
 
+  mapToProps() {
+    return this.adapter.mapToProps();
+  }
+
   _adapterInit() {
     if(this.state.get) {
       return new ImmutableStateAdapter(this.state);

@@ -20,7 +20,22 @@ class Middleware {
 
     this._parseAction();
     this._handleInteractorAction();
-    return this.next(this._conventionalActionHash());
+
+    const result = this.next(this._conventionalActionHash());
+
+    const currentState = this.store.getState();
+
+    Object.values(this.interactorStore.interactors()).forEach((interactor) => {
+      if(interactor.computedActions) {
+        interactor.computedActions().forEach((computedAction) => {
+          if(computedAction.after == this.actionName || (Array.isArray(computedAction.after) && computedAction.after.includes(this.actionName))) {
+            this.store.dispatch([computedAction.dispatch].concat(computedAction.with.map((x) => getProperty(currentState, x)  )));
+          }
+        });
+      }
+    });
+
+    return result;
   }
 
   _handleInteractorAction() {

@@ -97,6 +97,19 @@ describe('interactor middleware', () => {
     }, 50);
   });
 
+  test('handles computed actions', () => {
+    action = ['users:computed_1', 1]
+    buildMiddleware().perform();
+
+    action = ['users:computed_2', 2]
+    buildMiddleware().perform();
+
+    expect(store.dispatch.mock.calls.length).toEqual(3);
+    expect(store.dispatch.mock.calls[0][0]).toEqual(['users:computedAction', 'fake-current-user-id']);
+    expect(store.dispatch.mock.calls[1][0]).toEqual(['users:secondComputedAction', 'confirmed']);
+    expect(store.dispatch.mock.calls[2][0]).toEqual(['users:computedAction', 'fake-current-user-id']);
+  });
+
   function buildMiddleware() {
     return new Middleware({interactorStore: interactorStore, store: store, next: nextMock, action: action});
   }
