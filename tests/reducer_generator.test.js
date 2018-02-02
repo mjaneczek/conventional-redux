@@ -52,4 +52,16 @@ describe('reducer generator', () => {
       args: ['now'] }
     )).toEqual({currentUserId: null, logoutTime: 'now'});
   });
+
+  test('works when on is an array in external dependency hash', () => {
+    expect(reduce(exampleState, {
+      type: 'CONV_REDUX/users:makeAdmin',
+      args: ['admin'] }
+    )).toEqual({admin: 'admin'});
+
+    expect(reduce(exampleState, {
+      type: 'CONV_REDUX/users:makeSuperAdmin',
+      args: ['superadmin'] }
+    )).toEqual({admin: 'superadmin'});
+  });
 });

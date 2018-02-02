@@ -35,11 +35,16 @@ export default class FakeInteractor {
   externalDependencies() {
     return [
       { on: 'LOGOUT', call: this.onClear },
-      { on: 'users:logout', call: this.onClear }
+      { on: 'users:logout', call: this.onClear },
+      { on: ['users:makeAdmin', 'users:makeSuperAdmin'], call: this.onSetAdmin },
     ]
   }
 
   onClear(logoutTime) {
     return {currentUserId: null, logoutTime: logoutTime};
+  }
+
+  onSetAdmin(adminType) {
+    return { admin: adminType };
   }
 }
