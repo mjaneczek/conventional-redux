@@ -23,17 +23,41 @@ class ReducerGenerator {
         state = this._getDefaultState(interactor);
 
       defineStateGetter(interactor, state);
-      return this._handleConventionalAction(name, action, interactor) || state;
+
+      state = this._handleConventionalAction(name, action, interactor, state);
+      state = this._handleExternalDependencies(action, interactor, state);
+
+      return state;
     }
   }
 
-  _handleConventionalAction(name, action, interactor) {
+  _handleConventionalAction(name, action, interactor, state) {
     if(action.type && action.type.startsWith(`CONV_REDUX/${name}:`)) {
       const reduceMethodName = this._getReduceMethodName(action);
 
       if (interactor[reduceMethodName]) {
         return interactor[reduceMethodName].apply(interactor, action.args);
       }
+    } else {
+      return state;
+    }
+  }
+
+  _handleExternalDependencies(action, interactor, state) {
+    if(interactor.externalDependencies && action.type) {
+
+      let newState = state;
+
+      interactor.externalDependencies().forEach((externalDependency) => {
+        if(externalDependency.on == action.type || action.type.replace('CONV_REDUX/', '') == externalDependency.on) {
+          newState = externalDependency.call.apply(interactor, action.args)
+        }
+      });
+
+      return newState;
+
+    } else {
+      return state;
     }
   }
 

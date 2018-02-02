@@ -31,4 +31,15 @@ export default class FakeInteractor {
   defaultState() {
     return { defaultState: true };
   }
+
+  externalDependencies() {
+    return [
+      { on: 'LOGOUT', call: this.onClear },
+      { on: 'users:logout', call: this.onClear }
+    ]
+  }
+
+  onClear(logoutTime) {
+    return {currentUserId: null, logoutTime: logoutTime};
+  }
 }

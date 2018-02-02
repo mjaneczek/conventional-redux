@@ -38,4 +38,18 @@ describe('reducer generator', () => {
       args: [1] }
     )).toEqual(Object.assign({}, exampleState, {followedUser: 1}));
   });
+
+  test('calls additional reducer for external action types', () => {
+    expect(reduce(exampleState, {
+      type: 'LOGOUT',
+      args: ['now'] }
+    )).toEqual({currentUserId: null, logoutTime: 'now'});
+  });
+
+  test('calls additional reducer for external conventional action types', () => {
+    expect(reduce(exampleState, {
+      type: 'CONV_REDUX/users:logout',
+      args: ['now'] }
+    )).toEqual({currentUserId: null, logoutTime: 'now'});
+  });
 });
