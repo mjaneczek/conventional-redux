@@ -14,7 +14,7 @@ describe('root reducer generator', () => {
     combineReducersFunc = jest.fn().mockReturnValue(combinedReducer)
 
     interactorStore = new Store();
-    interactorStore.registerInteractor('users', fakeInteractor, { dynamic: true });
+    interactorStore.registerInteractors({users: fakeInteractor}, { dynamic: true });
     interactorStore.setRecreateReducerFunction(()=>true);
 
     generator = new RootReducerGenerator({interactorStore: interactorStore});

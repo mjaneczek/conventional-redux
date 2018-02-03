@@ -11,7 +11,7 @@ describe('interactor middleware', () => {
     store = new FakeStore();
 
     interactorStore = new Store();
-    interactorStore.registerInteractor('users', new FakeInteractor());
+    interactorStore.registerInteractors({users: new FakeInteractor()});
   });
 
   test('calls next with action for standard actions', () => {

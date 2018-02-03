@@ -15,7 +15,7 @@ describe('interactor store', () => {
   });
 
   test('registers an interactor', () => {
-    store.registerInteractor('projects', fakeInteractor);
+    store.registerInteractors({projects: fakeInteractor});
     expect(store.interactors()['projects']).toEqual(fakeInteractor);
   });
 
@@ -28,13 +28,22 @@ describe('interactor store', () => {
   });
 
   test('gets interactor by name', () => {
-    store.registerInteractor('projects', fakeInteractor);
+    store.registerInteractors({projects: fakeInteractor});
     expect(store.get('projects')).toEqual(fakeInteractor);
+  });
+
+  test('generates computed actions hash', () => {
+    store.registerInteractors({projects: fakeInteractor});
+
+    expect(store.computedActionHash).toEqual({
+      'users:computed_1': [{ dispatch: 'users:computedAction', with: ['users.current_user_id'] }, { dispatch: 'users:secondComputedAction', with: ['users.state'] }],
+      'users:computed_2': [{ dispatch: 'users:computedAction', with: ['users.current_user_id'] }],
+    });
   });
 
   describe('dynamic option', () => {
     test('registers a dynamic interactor', () => {
-      store.registerInteractor('projects', fakeInteractor, { dynamic: true });
+      store.registerInteractors({projects: fakeInteractor}, { dynamic: true });
       expect(store.get('projects')).toEqual(fakeInteractor);
     });
 
@@ -47,7 +56,7 @@ describe('interactor store', () => {
     });
 
     test('removes all dynamic interactors', () => {
-      store.registerInteractor('projects', fakeInteractor, { dynamic: true });
+      store.registerInteractors({projects: fakeInteractor}, { dynamic: true });
       store.registerInteractors({users: fakeInteractor}, { dynamic: true });
 
       store.removeDynamicInteractors();

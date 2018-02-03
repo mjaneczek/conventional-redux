@@ -23,17 +23,15 @@ class Middleware {
 
     const result = this.next(this._conventionalActionHash());
 
-    const currentState = this.store.getState();
+    const computedActions = this.interactorStore.computedActionHash[this.actionName];
 
-    Object.values(this.interactorStore.interactors()).forEach((interactor) => {
-      if(interactor.computedActions) {
-        interactor.computedActions().forEach((computedAction) => {
-          if(computedAction.after == this.actionName || (Array.isArray(computedAction.after) && computedAction.after.includes(this.actionName))) {
-            this.store.dispatch([computedAction.dispatch].concat(computedAction.with.map((x) => getProperty(currentState, x)  )));
-          }
-        });
-      }
-    });
+    if(computedActions) {
+      const currentState = this.store.getState();
+
+      computedActions.forEach((computedAction) => {
+        this.store.dispatch([computedAction.dispatch].concat(computedAction.with.map((x) => getProperty(currentState, x))));
+      })
+    }
 
     return result;
   }

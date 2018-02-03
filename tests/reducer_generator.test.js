@@ -9,7 +9,7 @@ describe('reducer generator', () => {
 
   beforeEach(() => {
     interactorStore = new Store();
-    interactorStore.registerInteractor('users', fakeInteractor);
+    interactorStore.registerInteractors({users: fakeInteractor});
     generator = new ReducerGenerator({interactorStore: interactorStore});
 
     reducers = generator.all();

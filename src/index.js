@@ -26,7 +26,6 @@ export function createConventionalReduxRootReducer(reducers, combineReducersFunc
 }
 
 export const registerInteractors = interactorStore.registerInteractors.bind(interactorStore)
-export const registerInteractor = interactorStore.registerInteractor.bind(interactorStore)
 export const replaceDynamicInteractors = interactorStore.replaceDynamicInteractors.bind(interactorStore)
 export const removeDynamicInteractors = interactorStore.removeDynamicInteractors.bind(interactorStore)
 export const setRecreateReducerFunction = interactorStore.setRecreateReducerFunction.bind(interactorStore)
