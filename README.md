@@ -96,7 +96,7 @@ const mapStateToProps = (state) => ({
   counter: state.counter
 })
 
-export const Counter = (props) => (
+const Counter = (props) => (
   <div>
     <h2>{props.counter}</h2>
     
@@ -115,22 +115,19 @@ export default connect(mapStateToProps, mapActionCreators)(Counter)
 
 ### Conventional-redux connected component
 ```js
-class Counter extends React.Component {
-  render () {
-    return (
-      <div>
-        <h2>{this.p('counter')}</h2>
-        
-        <button onClick={() => this.d('counter:increment')}>
-          Increment
-        </button>
-        
-        <button onClick={() => this.d('counter:doubleAsync')}>
-          Double (Async)
-        </button>
-      </div>
-    )
-  }
+const Counter = (props, dispatch) => (
+  <div>
+    <h2>{props('counter')}</h2>
+    
+    <button onClick={dispatch('counter:increment')}>
+      Increment
+    </button>
+    
+    <button onClick={dispatch('counter:doubleAsync')}>
+      Double (Async)
+    </button>
+  </div>
+  )
 }
 
 export default connectInteractors(Counter, ['counter']);
@@ -153,10 +150,16 @@ export default connectInteractors(Counter, ['counter']);
 **Remember that you can combine these two approaches! Use convetional way for simple parts of your application, but
 when you need more control over what is going on, pure redux should be better!**
 
+## Example live application
+Check out an example app with code snippets [here](https://mjaneczek.github.io/conventional-redux-demo/).
+The code is available [here](https://github.com/mjaneczek/conventional-redux-demo).
+
 ## Functionalities list
 
 ### Auto define actions
 The library automatically defines actions based on reduce methods.
+[Check out live example.](https://mjaneczek.github.io/conventional-redux-demo/)
+
 ```js
 class CounterInteractor {
   defaultState() {
@@ -185,6 +188,8 @@ class CounterInteractor {
 
 ### Auto handle for promises
 Automatically handling for promises resolve and reject.
+[Check out live example.](https://mjaneczek.github.io/conventional-redux-demo/promises-handling)
+
 ```js
 class GithubUserdataInteractor {
   defaultState() {
@@ -215,27 +220,71 @@ class GithubUserdataInteractor {
 
 ```
 
-### Interactor computed reducers
-You can define a computed reducer method to modify interactor state after non interactor actions or
-if you need to merge results from two or more actions.
+### Interactor external dependencies
+You can define an array of external dependencies to modify interactor state after non interactor actions.
+[Check out live example.](https://mjaneczek.github.io/conventional-redux-demo/external-dependencies)
 
 ```js
-export default class ProjectInteractor extends RESTInteractor {
-  // key: reducer method name
-  // array: dependent actions
-  computedReducers = {
-    _groupProjects: ['CONV_REDUX/currentUser:set', 'CONV_REDUX/teams:fetchSuccess']
-  };
+class ExampleInteractor {
+  externalDependencies() {
+    return [
+      { on: ['LOGOUT'], call: 'onClear' }
+    ]
+  }
 
-  // fires only when all specific actions are already dispatched (and recalculates when value changed)
-  _groupProjects(user, projects) {
-    return { ...this.state, all: projects, owned: lodash.filter(projects, t => t.user_id == user.id) };
+   onClear(logoutActionArgs) {
+     return {};
   }
 }
 ```
 
+### Interactor computed actions
+You can define a computed actions array to call additional dispatch after specific actions. In the following example the action always fires after `projects:fetch` or `gists:fetch`.
+[Check out live example.](https://mjaneczek.github.io/conventional-redux-demo/computed-reducers)
+
+```js
+class FiltersInteractor {
+  computedActions() {
+    return [
+      { after: ['projects:fetch', 'gists:fetch'],
+        dispatch: 'filters:update',
+        with: ['projects.languages', 'gists.languages'] 
+      }
+    ]
+  }
+  
+  onUpdate(projectLanguages, gistLanguages) {
+    // it fires after gists or projects fetch with resolved args
+  }
+}
+
+```
+
+### Static and dynamic interactors
+Interactors can be static or dynamic. You cannot remove once registered static interactor. Dynamic interactors can be remvoed or replaced, the right moment to manage dynamic interactors is `ROUTE_CHANGE` action. A good example of static interactor would be `CurrentUserInteractor`, of dynamic - route based interactors like `ProjectsInteractor`, `SettingsInteractor` etc.
+[Check out live example.](https://mjaneczek.github.io/conventional-redux-demo/dynamic-interactors)
+
+```js
+// static, somewhere before connect:
+registerInteractors({
+  currentUser: new CurrentUserInteractor(),
+  currentLanguage: new CurrentLanguageInteractor(),
+});
+
+// dynamic
+onRouteChange() {
+  replaceDynamicInteractors({
+    counter: new CounterInteractor()
+  });
+}
+
+// dynamic setup, configuring store
+setRecreateReducerFunction(() => store.replaceReducer(createReducer(store.injectedReducers)));
+```
+
 ### Connect interactors
 It connects interactors (state) to a specific component.
+[Check out live example.](https://mjaneczek.github.io/conventional-redux-demo/)
 
 ```js
 class Counter extends React.Component {
@@ -273,60 +322,26 @@ npm install conventional-redux --save
 import { conventionalReduxMiddleware } from 'conventional-redux';
 const middleware = [conventionalReduxMiddleware, thunk, routerMiddleware(history)]
 ```
+Code example: https://github.com/mjaneczek/conventional-redux-demo/blob/master/app/configureStore.js#L33
 
-### 3. Add conventional-redux reducers
+### 3. Set recreate reducer function (needed only if using dynamic interactors)
 ```js
-import { conventionalReducers } from 'conventional-redux';
-
-return combineReducers({
-  router,
-  ...conventionalReducers(),
-  ...asyncReducers
-})
+setRecreateReducerFunction(() => store.replaceReducer(createReducer()));
 ```
+Code example: https://github.com/mjaneczek/conventional-redux-demo/blob/master/app/configureStore.js#L73
 
-### 4. Register interactors
-### a) Static way
-You can predefine all interactors and next connect specific interactors via `connectInteractor` method.
-
+### 3. Replace combineReducers with conventional-redux wrapper
 ```js
-// somewhere before connect:
-registerInteractors({
-  'currentUser': new CurrentUserInteractor(),
-  'currentLanguage': new CurrentLanguageInteractor(),
-  'modals': new ModalsInteractor(),
-  'counter': new CounterInteractor()
-});
+import { createConventionalReduxRootReducer } from 'conventional-redux';
 
-// example component:
-export default connectInteractors(Counter, ['counter', 'currentUser']);
+return createConventionalReduxRootReducer({
+  route: routeReducer,
+}, combineReducers);
+
+// the first parameter is a default combined reducers hash
+// the second is a pure combineReducers function from redux or redux-immmutable
 ```
-
-### b) Dynamic way
-You can register interactor as dynamic and remove it after some action (eg. based on current route).
-
-Setup
-```js
-setRecreateReducerFunction(() => store.replaceReducer(makeRootReducer()));
-```
-
-```js
-// routes/userdata/idnex.js
-export default () => {
-  return { path: 'userdata', getComponent: (state, cb) => {
-    // remove all dynamic interactors and replace with specified
-    // next recreate reducer using function set by setRecreateReducerFunction
-    replaceDynamicInteractors({userdata: new GithubUserdataInteractor()});
-    
-    // connect all static and dynamic interactors
-    cb(null, connectAllInteractors(GithubUserdataComponent))
-  }}
-}
-```
-
-### c) Combined way
-You can use static way for common/global interactors like `CurrentUserInteractor` or `ModalsInteractor` and
-dynamic for route specific interactors like `CounterInteractor`, `GithubUserdataInteractor`.
+Code example: https://github.com/mjaneczek/conventional-redux-demo/blob/master/app/reducers.js#L42
 
 ## Example application
 https://mjaneczek.github.io/conventional-redux-demo/
