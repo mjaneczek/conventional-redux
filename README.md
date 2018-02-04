@@ -240,7 +240,7 @@ class ExampleInteractor {
 
 ### Interactor computed actions
 You can define a computed actions array to call additional dispatch after specific actions. In the following example the action always fires after `projects:fetch` or `gists:fetch`.
-[Check out live example.](https://mjaneczek.github.io/conventional-redux-demo/computed-reducers)
+[Check out live example.](https://mjaneczek.github.io/conventional-redux-demo/computed-actions)
 
 ```js
 class FiltersInteractor {
