@@ -55,14 +55,12 @@ class Store {
   }
 
   _generateComputedActionHash() {
-    const interactors = Object.values(this.registeredInteractors);
     let result = {};
 
-    interactors.forEach((interactor) => {
+    Object.values(this.registeredInteractors).forEach((interactor) => {
       const computedActions = interactor.computedActions ? interactor.computedActions() : [];
       computedActions.forEach((computedAction) => {
-        const afterActions = computedAction.after;
-        afterActions.forEach((action) => {
+        computedAction.after.forEach((action) => {
           if(result[action] == null) {
             result[action] = []
           }

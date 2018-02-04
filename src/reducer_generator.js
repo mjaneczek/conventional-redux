@@ -32,33 +32,29 @@ class ReducerGenerator {
   }
 
   _handleConventionalAction(name, action, interactor, state) {
-    if(action.type && action.type.startsWith(`CONV_REDUX/${name}:`)) {
-      const reduceMethodName = this._getReduceMethodName(action)
-
-      if (interactor[reduceMethodName]) {
-        return interactor[reduceMethodName].apply(interactor, action.args)
-      }
-    } else {
+    if(!action.type || !action.type.startsWith(`CONV_REDUX/${name}:`)) {
       return state
+    }
+
+    const reduceMethodName = this._getReduceMethodName(action)
+
+    if (interactor[reduceMethodName]) {
+      return interactor[reduceMethodName].apply(interactor, action.args)
     }
   }
 
   _handleExternalDependencies(action, interactor, state) {
-    if(interactor.externalDependencies && action.type) {
-
-      let newState = state
-
-      interactor.externalDependencies().forEach((externalDependency) => {
-        if(externalDependency.on.includes(action.type) || externalDependency.on.includes(action.type.replace('CONV_REDUX/', ''))) {
-          newState = interactor[externalDependency.call].apply(interactor, action.args)
-        }
-      })
-
-      return newState
-
-    } else {
+    if(!action.type || !interactor.externalDependencies) {
       return state
     }
+
+    interactor.externalDependencies().forEach((externalDependency) => {
+      if(externalDependency.on.includes(action.type) || externalDependency.on.includes(action.type.replace('CONV_REDUX/', ''))) {
+        state = interactor[externalDependency.call].apply(interactor, action.args)
+      }
+    })
+
+    return state
   }
 
   _getDefaultState(interactor) {

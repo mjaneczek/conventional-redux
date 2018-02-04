@@ -22,16 +22,7 @@ class Middleware {
     this._handleInteractorAction();
 
     const result = this.next(this._conventionalActionHash());
-
-    const computedActions = this.interactorStore.computedActionHash[this.actionName];
-
-    if(computedActions) {
-      const currentState = this.store.getState();
-
-      computedActions.forEach((computedAction) => {
-        this.store.dispatch([computedAction.dispatch].concat(computedAction.with.map((x) => getProperty(currentState, x))));
-      })
-    }
+    this._handleComputedActions()
 
     return result;
   }
@@ -68,12 +59,24 @@ class Middleware {
 
   _callInteractorAction(interactor) {
     if(interactor[this.interactorMethod]) {
-      let actionResult = interactor[this.interactorMethod].apply(interactor, this.args);
+      const actionResult = interactor[this.interactorMethod].apply(interactor, this.args);
 
       if (this._isPromise(actionResult)) {
         this._autoDispatchPromise(actionResult);
       }
     }
+  }
+
+  _handleComputedActions() {
+    const computedActions = this.interactorStore.computedActionHash[this.actionName];
+    if(!computedActions) {
+      return
+    }
+
+    computedActions.forEach((computedAction) => {
+      const currentState = this.store.getState();
+      this.store.dispatch([computedAction.dispatch].concat(computedAction.with.map((p) => getProperty(currentState, p))));
+    })
   }
 
   _autoDispatchPromise(promise) {

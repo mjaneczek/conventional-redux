@@ -7,32 +7,7 @@ class Connector {
   }
 
   connectInteractors(component, interactorNames) {
-    let wrappedComponent
-
-    if(this._isFunctionComponent(component)) {
-      wrappedComponent = (props, context) => {
-        const property = (propertyString) => getProperty(props, propertyString)
-        const dispatch = (actionName, ...args) => props.dispatch([actionName].concat(args))
-
-        return component(property, dispatch)
-      }
-
-      wrappedComponent.displayName = component.name
-    } else {
-      wrappedComponent = component
-
-      wrappedComponent.prototype.property = function(propertyString) {
-        return getProperty(this.props, propertyString)
-      }
-
-      wrappedComponent.prototype.p = wrappedComponent.prototype.property
-
-      wrappedComponent.prototype.dispatch = function(actionName, ...args) {
-        return this.props.dispatch([actionName].concat(args))
-      }
-
-      wrappedComponent.prototype.d = wrappedComponent.prototype.dispatch
-    }
+    const wrappedComponent = this._wrapComponent(component)
 
     if(interactorNames) {
       return this.connectFunc((state) => this._connectHash(interactorNames, state))(wrappedComponent)
@@ -41,14 +16,49 @@ class Connector {
     }
   }
 
+  _wrapComponent(component) {
+    if(this._isFunctionComponent(component)) {
+      return this._wrapFunctionComponent(component)
+    } else {
+      return this._wrapClassComponent(component)
+    }
+  }
+
+  _wrapFunctionComponent(component) {
+    const wrappedComponent = (props, context) => {
+      const property = (propertyString) => getProperty(props, propertyString)
+      const dispatch = (actionName, ...args) => props.dispatch([actionName].concat(args))
+
+      return component(property, dispatch)
+    }
+
+    wrappedComponent.displayName = component.name
+    return wrappedComponent
+  }
+
+  _wrapClassComponent(component) {
+    component.prototype.property = function(propertyString) {
+      return getProperty(this.props, propertyString)
+    }
+
+    component.prototype.p = component.prototype.property
+
+    component.prototype.dispatch = function(actionName, ...args) {
+      return this.props.dispatch([actionName].concat(args))
+    }
+
+    component.prototype.d = component.prototype.dispatch
+    return component
+  }
+
   _isFunctionComponent(Component) {
     return !Component.prototype.render
   }
 
   _connectHash(interactorNames, state) {
-    let connectHash = {}
     const stateAdapter = new StateAdapter(state)
 
+    let connectHash = {}
     interactorNames.forEach(interactorName => connectHash[interactorName] = stateAdapter.get(interactorName))
     return connectHash
   }
