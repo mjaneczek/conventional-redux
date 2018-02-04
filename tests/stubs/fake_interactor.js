@@ -44,10 +44,6 @@ export default class FakeInteractor {
     return {currentUserId: null, logoutTime: logoutTime};
   }
 
-  onSetAdmin(adminType) {
-    return { admin: adminType };
-  }
-
   computedActions() {
     return [
       { after: ['users:computed_1', 'users:computed_2'], dispatch: 'users:computedAction', with: ['users.current_user_id'] },

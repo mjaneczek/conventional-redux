@@ -89,6 +89,14 @@ describe('connector', () => {
     expect(ConnectedComponent.displayName).toEqual('NamedComponent');
   });
 
+  test('works with immutablejs state (property method)', () => {
+    const Component = (property, dispatch) => (<h1>{property('projects.scope')}</h1>);
+    connector.connectInteractors(Component, ['projects']);
+
+    const ConnectedComponent = fakeWrapFunction.mock.calls[0][0];
+    expect(ReactDOMServer.renderToStaticMarkup(ConnectedComponent(fromJS(exampleState)))).toEqual('<h1>public</h1>');
+  });
+
   test('works with immutablejs state when interactor passed', () => {
     connector.connectInteractors(fakeFunctionComponent, ['users']);
 

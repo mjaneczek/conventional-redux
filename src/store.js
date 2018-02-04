@@ -46,7 +46,7 @@ class Store {
     this.recreateReducerFunction = func;
   }
 
-  _registerInteractor(name, interactor, options = {}) {
+  _registerInteractor(name, interactor, options) {
     if(options['dynamic']) {
       this.dynamicInteractorNames.push(name)
     }
