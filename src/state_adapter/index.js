@@ -1,29 +1,29 @@
-import MutableStateAdapter from './mutable_state_adapter';
-import ImmutableStateAdapter from './immutable_state_adapter';
+import MutableStateAdapter from './mutable_state_adapter'
+import ImmutableStateAdapter from './immutable_state_adapter'
 
 class StateAdapter {
   constructor(state) {
     this.state = state
-    this.adapter = this._adapterInit();
+    this.adapter = this._adapterInit()
   }
 
   get(property) {
-    return this.adapter.get(property);
+    return this.adapter.get(property)
   }
 
   clear(currentReducerKeys) {
-    return this.adapter.clear(currentReducerKeys);
+    return this.adapter.clear(currentReducerKeys)
   }
 
   mapToProps() {
-    return this.adapter.mapToProps();
+    return this.adapter.mapToProps()
   }
 
   _adapterInit() {
     if(this.state.get) {
-      return new ImmutableStateAdapter(this.state);
+      return new ImmutableStateAdapter(this.state)
     } else {
-      return new MutableStateAdapter(this.state);
+      return new MutableStateAdapter(this.state)
     }
   }
 }

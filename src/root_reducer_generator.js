@@ -1,9 +1,9 @@
-import ReducerGenerator from '~/reducer_generator';
-import StateAdapter from '~/state_adapter';
+import ReducerGenerator from '~/reducer_generator'
+import StateAdapter from '~/state_adapter'
 
 class RootReducerGenerator {
   constructor({interactorStore}) {
-    this.interactorStore = interactorStore;
+    this.interactorStore = interactorStore
     this.reducersGenerator = new ReducerGenerator({interactorStore: interactorStore})
   }
 
@@ -13,11 +13,10 @@ class RootReducerGenerator {
       ...this.reducersGenerator.all()
     }
 
-    const reducerKeys = Object.keys(reducers);
     const appReducer = combineReducersFunc(reducers)
 
     return (state, action) => {
-      if(action.type == "@@redux/INIT") {
+      if(action.type == '@@redux/INIT') {
         state = new StateAdapter(state).clear(this.interactorStore.removedDynamicInteractors)
       }
 

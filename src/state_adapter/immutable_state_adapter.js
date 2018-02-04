@@ -12,7 +12,7 @@ class ImmutableStateAdapter {
   }
 
   mapToProps() {
-    return this.state.toObject();
+    return this.state.toObject()
   }
 }
 

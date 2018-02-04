@@ -10,13 +10,13 @@ class MutableStateAdapter {
   clear(outdatedReducerKeys) {
     Object.keys(this.state)
       .filter(key => outdatedReducerKeys.includes(key))
-      .forEach(key => delete this.state[key]);
+      .forEach(key => delete this.state[key])
 
-    return this.state;
+    return this.state
   }
 
   mapToProps() {
-    return this.state;
+    return this.state
   }
 }
 

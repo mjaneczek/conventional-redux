@@ -24,6 +24,8 @@
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-0": "^6.24.1",
     "coveralls": "^3.0.0",
+    "eslint": "^4.17.0",
+    "eslint-plugin-react": "^7.6.1",
     "immutable": "^3.8.2",
     "jest": "^22.1.1",
     "react": "^16.2.0",
