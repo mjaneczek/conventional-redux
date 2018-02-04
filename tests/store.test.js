@@ -56,11 +56,17 @@ describe('interactor store', () => {
     });
 
     test('removes all dynamic interactors', () => {
-      store.registerInteractors({projects: fakeInteractor}, { dynamic: true });
-      store.registerInteractors({users: fakeInteractor}, { dynamic: true });
+      store.registerInteractors({projects: fakeInteractor, users: fakeInteractor }, { dynamic: true });
 
       store.removeDynamicInteractors();
       expect(store.interactors()).toEqual({});
+    });
+
+    test('sets recreate reducer function', () => {
+      store.setRecreateReducerFunction(fakeRecreateReducerFunction);
+      store.replaceDynamicInteractors({});
+
+      expect(fakeRecreateReducerFunction.mock.calls.length).toEqual(1);
     });
 
     test('replaces dynamic interactors', () => {
@@ -70,13 +76,6 @@ describe('interactor store', () => {
 
       expect(Object.keys(store.interactors())).toEqual(['clients']);
       expect(store.get('clients')).toEqual(fakeInteractor);
-    });
-
-    test('sets recreate reducer function', () => {
-      store.setRecreateReducerFunction(fakeRecreateReducerFunction);
-      store.replaceDynamicInteractors({});
-
-      expect(fakeRecreateReducerFunction.mock.calls.length).toEqual(1);
     });
 
     test('throws error when no recreate reducer function passed', () => {

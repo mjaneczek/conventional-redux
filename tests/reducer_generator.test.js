@@ -1,4 +1,4 @@
-import Store from '~/store';
+import buildInteractorStore from './utils/buildInteractorStore';
 import ReducerGenerator from '~/reducer_generator';
 import FakeInteractor from './stubs/fake_interactor';
 import FakeInteractorWithoutDefaultState from './stubs/fake_interactor_without_default_state';
@@ -9,8 +9,7 @@ describe('reducer generator', () => {
   let interactorStore, generator, reducers, reduce;
 
   beforeEach(() => {
-    interactorStore = new Store();
-    interactorStore.registerInteractors({users: fakeInteractor, nostate: new FakeInteractorWithoutDefaultState()});
+    interactorStore = buildInteractorStore({users: fakeInteractor, projects: new FakeInteractorWithoutDefaultState()})
     generator = new ReducerGenerator({interactorStore: interactorStore});
 
     reducers = generator.all();
@@ -18,8 +17,13 @@ describe('reducer generator', () => {
   });
 
   test('generates reducer that do nothing', () => {
-    expect(Object.keys(reducers)).toEqual(['users', 'nostate']);
+    expect(Object.keys(reducers)).toEqual(['users', 'projects']);
     expect(reduce(exampleState, 'NOT_EXISTING_ACTION')).toEqual(exampleState);
+  });
+
+  test('sets default reducer state to null', () => {
+    reduce = reducers['projects'];
+    expect(reduce(null, 'NOT_EXISTING_ACTION')).toEqual(null);
   });
 
   test('defines readonly state property in interactor', () => {
@@ -27,11 +31,6 @@ describe('reducer generator', () => {
 
     expect(fakeInteractor.state).toEqual(exampleState);
     expect(() => fakeInteractor.state = "NEW_STATE").toThrowError('Cannot modify readonly property state!');
-  });
-
-  test('checks if default reducer state is nulll', () => {
-    reduce = reducers['nostate'];
-    expect(reduce(null, 'NOT_EXISTING_ACTION')).toEqual(null);
   });
 
   test('uses default state from interactor method', () => {

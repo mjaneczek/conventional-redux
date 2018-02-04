@@ -1,15 +1,12 @@
-import { fromJS } from 'immutable';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
-import Store from '~/store';
 import Connector from '~/connector';
-import FakeInteractor from './stubs/fake_interactor';
 
 describe('connector', () => {
   let connector, fakeWrapFunction, fakeConnectFunction, fakeFunctionComponent, exampleState;
 
   beforeEach(() => {
-    exampleState = {users: { current: 'user1', data: ['users-data'] }, projects: { scope: 'public', data: ['projects-data'] }, dispatch: jest.fn() };
+    exampleState = {users: { current: 'user1' }, projects: { scope: 'public' }, dispatch: jest.fn() };
     fakeWrapFunction = jest.fn();
     fakeConnectFunction = jest.fn().mockReturnValue(fakeWrapFunction);
     fakeFunctionComponent = jest.fn().mockReturnValue('<h1>fake</h1>');
@@ -28,8 +25,6 @@ describe('connector', () => {
 
     const generatedMapStateToPropsFunction = fakeConnectFunction.mock.calls[0][0];
     expect(generatedMapStateToPropsFunction(exampleState)).toEqual({users: exampleState['users']});
-
-    expect(fakeWrapFunction.mock.calls[0][0]()).toEqual('<h1>fake</h1>');
   });
 
   test('passes property function to function component', () => {
@@ -87,27 +82,5 @@ describe('connector', () => {
 
     const ConnectedComponent = fakeWrapFunction.mock.calls[0][0];
     expect(ConnectedComponent.displayName).toEqual('NamedComponent');
-  });
-
-  test('works with immutablejs state (property method)', () => {
-    const Component = (property, dispatch) => (<h1>{property('projects.scope')}</h1>);
-    connector.connectInteractors(Component, ['projects']);
-
-    const ConnectedComponent = fakeWrapFunction.mock.calls[0][0];
-    expect(ReactDOMServer.renderToStaticMarkup(ConnectedComponent(fromJS(exampleState)))).toEqual('<h1>public</h1>');
-  });
-
-  test('works with immutablejs state when interactor passed', () => {
-    connector.connectInteractors(fakeFunctionComponent, ['users']);
-
-    const generatedMapStateToPropsFunction = fakeConnectFunction.mock.calls[0][0];
-    expect(generatedMapStateToPropsFunction(fromJS(exampleState))).toEqual({users: fromJS(exampleState['users'])});
-  });
-
-  test('works with immutablejs state for all interactors', () => {
-    connector.connectInteractors(fakeFunctionComponent);
-
-    const generatedMapStateToPropsFunction = fakeConnectFunction.mock.calls[0][0];
-    expect(generatedMapStateToPropsFunction(fromJS(exampleState))).toEqual(fromJS(exampleState).toObject());
   });
 });
