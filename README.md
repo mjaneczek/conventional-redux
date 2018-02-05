@@ -322,13 +322,13 @@ npm install conventional-redux --save
 import { conventionalReduxMiddleware } from 'conventional-redux';
 const middleware = [conventionalReduxMiddleware, thunk, routerMiddleware(history)]
 ```
-Code example: https://github.com/mjaneczek/conventional-redux-demo/blob/master/app/configureStore.js#L33
+Code example: https://github.com/mjaneczek/conventional-redux-demo/blob/master/app/configureStore.js#L12 
 
 ### 3. Set recreate reducer function (needed only if using dynamic interactors)
 ```js
 setRecreateReducerFunction(() => store.replaceReducer(createReducer()));
 ```
-Code example: https://github.com/mjaneczek/conventional-redux-demo/blob/master/app/configureStore.js#L73
+Code example: https://github.com/mjaneczek/conventional-redux-demo/blob/master/app/configureStore.js#L35
 
 ### 3. Replace combineReducers with conventional-redux wrapper
 ```js
@@ -341,7 +341,7 @@ return createConventionalReduxRootReducer({
 // the first parameter is a default combined reducers hash
 // the second is a pure combineReducers function from redux or redux-immmutable
 ```
-Code example: https://github.com/mjaneczek/conventional-redux-demo/blob/master/app/reducers.js#L42
+Code example: https://github.com/mjaneczek/conventional-redux-demo/blob/master/app/reducers.js#L20
 
 ## Example application
 https://mjaneczek.github.io/conventional-redux-demo/
