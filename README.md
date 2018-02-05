@@ -347,7 +347,7 @@ Code example: https://github.com/mjaneczek/conventional-redux-demo/blob/master/a
 https://mjaneczek.github.io/conventional-redux-demo/
 
 ## Deprecation note
-The previous version of the library 0.2.2 has been deprecated. There are many breaking changes while migrating to 1.0, please be careful while updating.
+The previous version of the library 0.2.2 has been deprecated. There are many breaking changes while migrating to 1.0, please be careful while updating. The outdated code is here: https://github.com/mjaneczek/conventional-redux/tree/0.2.2-outdated
 
 ## Contributing
 1. Fork it ( https://github.com/mjaneczek/conventional-redux/fork )
