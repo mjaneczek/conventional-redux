@@ -346,6 +346,9 @@ Code example: https://github.com/mjaneczek/conventional-redux-demo/blob/master/a
 ## Example application
 https://mjaneczek.github.io/conventional-redux-demo/
 
+## Deprecation note
+The previous version of the library 0.2.2 has been deprecated. There are many breaking changes while migrating to 1.0, please be careful while updating.
+
 ## Contributing
 1. Fork it ( https://github.com/mjaneczek/conventional-redux/fork )
 2. Create your feature branch (`git checkout -b my-new-feature`)
