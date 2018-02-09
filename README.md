@@ -330,7 +330,7 @@ setRecreateReducerFunction(() => store.replaceReducer(createReducer()));
 ```
 Code example: https://github.com/mjaneczek/conventional-redux-demo/blob/master/app/configureStore.js#L35
 
-### 3. Replace combineReducers with conventional-redux wrapper
+### 4. Replace combineReducers with conventional-redux wrapper
 ```js
 import { createConventionalReduxRootReducer } from 'conventional-redux';
 
