@@ -1,5 +1,6 @@
 import StateAdapter from '~/state_adapter'
 import { getProperty } from '~/utils'
+import { settings } from '~/settings'
 
 class Connector {
   constructor({connectFunc}) {
@@ -29,7 +30,7 @@ class Connector {
       const property = (propertyString) => getProperty(props, propertyString)
       const dispatch = (actionName, ...args) => props.dispatch([actionName].concat(args))
 
-      return component(property, dispatch)
+      return component(settings.useNativeProps ? props : property, dispatch)
     }
 
     wrappedComponent.displayName = component.name

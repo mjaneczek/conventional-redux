@@ -1,0 +1,1 @@
+export let settings = { useNativeProps: false }

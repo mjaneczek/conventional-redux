@@ -5,6 +5,7 @@ import Middleware from '~/middleware'
 import RootReducerGenerator from '~/root_reducer_generator'
 import ReducerGenerator from '~/reducer_generator'
 import Connector from '~/connector'
+import { settings as libSettings } from '~/settings'
 
 export const interactorStore = new Store()
 export const connector = new Connector({connectFunc: connect})
@@ -29,3 +30,4 @@ export const registerInteractors = interactorStore.registerInteractors.bind(inte
 export const replaceDynamicInteractors = interactorStore.replaceDynamicInteractors.bind(interactorStore)
 export const removeDynamicInteractors = interactorStore.removeDynamicInteractors.bind(interactorStore)
 export const setRecreateReducerFunction = interactorStore.setRecreateReducerFunction.bind(interactorStore)
+export const settings = libSettings
