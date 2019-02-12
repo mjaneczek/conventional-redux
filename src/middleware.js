@@ -82,9 +82,9 @@ class Middleware {
   _autoDispatchPromise(promise) {
     promise.then((data) => {
       this.store.dispatch([this.actionName + 'Success', data])
-    }).catch((error) => {
+    }, (error) => {
       this.store.dispatch([this.actionName + 'Error', error])
-    });
+    })
   }
 
   _conventionalActionHash() {
