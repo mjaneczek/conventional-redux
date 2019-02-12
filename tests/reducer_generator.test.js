@@ -26,6 +26,11 @@ describe('reducer generator', () => {
     expect(reduce(null, 'NOT_EXISTING_ACTION')).toEqual(null);
   });
 
+  test('returns state if action reducer not found', () => {
+    reduce = reducers['projects'];
+    expect(reduce(null, { type: 'CONV_REDUX/projects:actionWithoutReducer' })).toEqual(null);
+  });
+
   test('defines readonly state property in interactor', () => {
     reduce(exampleState, 'NOT_EXISTING_ACTION');
 

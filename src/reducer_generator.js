@@ -41,6 +41,8 @@ class ReducerGenerator {
     if (interactor[reduceMethodName]) {
       return interactor[reduceMethodName].apply(interactor, action.args)
     }
+
+    return state
   }
 
   _handleExternalDependencies(action, interactor, state) {
