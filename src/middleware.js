@@ -31,11 +31,11 @@ class Middleware {
     const interactor = this.interactorStore.get(this.interactorName);
 
     if(interactor == null) {
-      throw new Error(`No interactor registered as ${this.interactorName}!`);
+      console.warn(`No interactor registered as ${this.interactorName}!`)
+    } else {
+      this._defineInteractorMethods(interactor);
+      this._callInteractorAction(interactor);
     }
-
-    this._defineInteractorMethods(interactor);
-    this._callInteractorAction(interactor);
   }
 
   _defineInteractorMethods(interactor) {

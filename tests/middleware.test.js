@@ -39,9 +39,9 @@ describe('interactor middleware', () => {
     buildMiddleware(['users:delete', 'fake-user-id']).perform();
   });
 
-  test('throw error if interactor not defined', () => {
+  test('works when interactor not defined', () => {
     const action = ['invalid-interactor-name:delete', 'fake-user-id']
-    expect(() => buildMiddleware(action).perform()).toThrowError('No interactor registered as invalid-interactor-name!');
+    buildMiddleware(action).perform();
   });
 
   test('delegates native _dispatch function from the store to interactors', () => {
